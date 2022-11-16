@@ -1,0 +1,35 @@
+parameters: {}
+environment: {}
+packages:
+  - name: dev
+    shared: false
+    environment:
+      BOT_NAME: RandoBot
+      MASTODON_API_URL: 
+      MASTODON_API_TOKEN: 
+      TWITCH_API_KEY: 
+      TWITCH_API_SECRET: 
+      TWITCH_EVENT_SECRET: 
+      DISCORD_CLIENTID: 
+      DISCORD_SECRET: 
+      DISCORD_TOKEN: 
+      DISCORD_CHANNEL: 
+    parameters: 
+      mapped_accounts: {}
+    annotations: {}
+    functions:
+      - name: update
+        binary: false
+        main: ""
+        runtime: python:default
+        web: raw
+        websecure: false
+        parameters: {}
+        environment:
+          EVENTSUB_URL: 
+          REST_TOKEN: 
+        annotations: {}
+        limits:
+          logs: 10
+          memory: 256
+          timeout: 120000
