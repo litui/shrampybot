@@ -1,7 +1,7 @@
 parameters: {}
 environment: {}
 packages:
-  - name: dev
+  - name: shrampy-dev
     shared: false
     environment:
       BOT_NAME: RandoBot
