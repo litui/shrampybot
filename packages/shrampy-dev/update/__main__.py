@@ -75,7 +75,7 @@ class SocialHandler:
 
     @cached_property
     def m_to_t_map(self):
-        mapped_accounts = self.account_map
+        mapped_accounts = self.account_map.copy()
 
         for account,data in self.accounts_full.items():
             for field in data:
@@ -83,18 +83,30 @@ class SocialHandler:
 
                 # Check if field contains Twitch URL
                 res = re.findall(
-                    pattern=r"\"?(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([A-Za-z0-9_-]+)\/?\"?",
-                    string=field["value"]
+                    pattern=r"\"(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([A-Za-z0-9_-]+)\/?\"",
+                    string=field["value"],
+                    flags=re.I
                 )
-
                 if len(res) == 1:
-                    data_map["twitch_id"] = res[0]
+                    data_map["twitch_id"] = res[0].lower()
+                else:
+                    res = re.findall(
+                        pattern=r"(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([A-Za-z0-9_-]+)\/?",
+                        string=field["value"],
+                        flags=re.I
+                    )
+                    if len(res) == 1:
+                        data_map["twitch_id"] = res[0].lower()
 
                 if data_map:
                     mapped_accounts[account] = data_map
                     break
 
         return mapped_accounts
+
+    @cached_property
+    def discord_channel(self):
+        return self.dh.get_channel(id=os.environ["DISCORD_CHANNEL"])
 
     @cached_property
     def twitch_event_subs(self):
