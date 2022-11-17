@@ -9,3 +9,4 @@ project.yml
 shrampy-prod
 virtualenv
 .vscode
+*.http

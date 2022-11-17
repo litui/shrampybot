@@ -5,17 +5,18 @@ packages:
     shared: false
     environment:
       BOT_NAME: RandoBot
-      MASTODON_API_URL: 
-      MASTODON_API_TOKEN: 
-      TWITCH_API_KEY: 
-      TWITCH_API_SECRET: 
-      TWITCH_EVENT_SECRET: 
-      DISCORD_CLIENTID: 
-      DISCORD_SECRET: 
-      DISCORD_TOKEN: 
-      DISCORD_CHANNEL: 
+      MASTODON_API_URL: GETFROMMASTODON
+      MASTODON_API_TOKEN: GETFROMMASTODON
+      TWITCH_API_KEY: GETFROMTWITCH
+      TWITCH_API_SECRET: GETFROMTWITCH
+      TWITCH_EVENT_SECRET: MAKEYOUROWNABOUTTHISLENGTH
+      OVERRIDE_TOKEN: MAKEYOUROWNABOUTTHISLENGTH
     parameters: 
-      mapped_accounts: {}
+      cross_instance_account_map:
+        litui@gsg.live: litui
+      twitch_category_hashtag_map:
+        'Music': '#music'
+        'ASMR': '#asmr'
     annotations: {}
     functions:
       - name: update
@@ -26,8 +27,7 @@ packages:
         websecure: false
         parameters: {}
         environment:
-          EVENTSUB_URL: 
-          REST_TOKEN: 
+          EVENTSUB_URL: THE_WEB_ACCESSIBLE_URL_OF_THIS_SCRIPT
         annotations: {}
         limits:
           logs: 10

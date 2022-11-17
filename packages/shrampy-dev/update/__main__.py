@@ -5,7 +5,6 @@ import urllib.request
 from mastodon import Mastodon
 from twitchAPI.twitch import Twitch
 from twitchAPI.eventsub import EventSub
-from discord.client import Client as DiscordClient
 import hmac, binascii, hashlib
 import json
 
@@ -18,22 +17,6 @@ TWITCH_MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type'.lower()
 # Prepend this string to the HMAC that's created from the message
 HMAC_PREFIX = 'sha256=';
 
-CATEGORY_HASHTAGS = {
-    "Music": "#music #musodon #synth #synthesis @synths@a.gup.pe",
-    "ASMR": "#ASMR #synth #synthesis @synths@a.gup.pe",
-    "Art": "#art",
-    "Noise": "#noise #musodon #synth #synthesis @synths@a.gup.pe",
-    "Science & Technology": "#science #technology #tech",
-    "Just Chatting": "#chat",
-    "Pools, Hot Tubs, and Beaches": "#hottub #pool #beach",
-    "Animals, Aquariums, and Zoos": "#animal #aquarium #zoo",
-    "Gardening Guide": "#garden #gardening #growing",
-    "Makers & Crafting": "#makers #making #crafts #crafting",
-    "Talk Shows & Podcasts": "#talkshow #podcast",
-    "Software and Game Development": "#software #gamedev",
-    "Special Events": "#specialevent #event"
-}
-
 
 class SocialHandler:
     def __init__(self):
@@ -45,12 +28,6 @@ class SocialHandler:
         pass
 
     ### Properties
-
-    @cached_property
-    def dh(self):
-        """Discord Handler"""
-
-        # TODO: handle discord sending
 
     @cached_property
     def th(self):
@@ -98,7 +75,7 @@ class SocialHandler:
 
     @cached_property
     def m_to_t_map(self):
-        mapped_accounts = {}
+        mapped_accounts = self.account_map
 
         for account,data in self.accounts_full.items():
             for field in data:
@@ -106,7 +83,7 @@ class SocialHandler:
 
                 # Check if field contains Twitch URL
                 res = re.findall(
-                    pattern=r"\"(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([A-Za-z0-9_-]+)\/?\"",
+                    pattern=r"\"?(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([A-Za-z0-9_-]+)\/?\"?",
                     string=field["value"]
                 )
 
@@ -116,9 +93,6 @@ class SocialHandler:
                 if data_map:
                     mapped_accounts[account] = data_map
                     break
-
-        # Manual mappings for users on other instances
-        # TODO: add code to read these from project.yml
 
         return mapped_accounts
 
@@ -158,7 +132,7 @@ class SocialHandler:
 
         # Fail if incorrect category
         category = stream.get("game_name", "")
-        if category not in CATEGORY_HASHTAGS.keys():
+        if category not in self.categories.keys():
             return {
                 "body": {
                     "error": "Category {} not in acceptable categories list."
@@ -209,13 +183,12 @@ class SocialHandler:
                     category,
                     stream_url,
                     stream_title,
-                    CATEGORY_HASHTAGS[category],
-                    # event_id_h,
+                    self.categories[category],
                     stream_id_h
                   )
         toot = self.mh.status_post(
             status=message,
-            visibility='unlisted',
+            visibility='public',
             media_ids=media_ids,
             sensitive=mature,
             spoiler_text="Adult {} stream".format(category) if mature else None
@@ -226,14 +199,10 @@ class SocialHandler:
 
     def stream_offline_cb(self, data):
         print(json.dumps(data))
-        # Can't handle offline events properly until Mastodon API supports editing
-        # TODO: handle offline events
         return {"body": data}
 
     def raidout_cb(self, data):
         print(json.dumps(data))
-        # Can't handle raid events properly until Mastodon API supports editing
-        # TODO: handle raid events
         return {"body": data}
 
     ### Functions
@@ -345,14 +314,19 @@ class SocialHandler:
         self.headers = args.get("__ow_headers", {})
         self.method = args.get("__ow_method", {})
         self.path = args.get("__ow_path", {})
-        self.body_raw = args.get("__ow_body")
+        self.body_raw = args.get("__ow_body", "")
+        self.account_map = args.get("cross_instance_account_map", {})
+        self.categories = args.get("twitch_category_hashtag_map", {})
         self.body = json.loads(self.body_raw)
 
         override = self.body.get("override", "");
-        if override == "subscribe":
-            return self.subscribe_events()
-        if override == "unsubscribe":
-            return self.unsubscribe_all_events()
+        override_token = self.body.get("override_token", "");
+        if override and override_token:
+            if override_token == os.environ["OVERRIDE_TOKEN"]:
+                if override == "subscribe":
+                    return self.subscribe_events()
+                if override == "unsubscribe":
+                    return self.unsubscribe_all_events()
 
         msg_type = self.headers.get(TWITCH_MESSAGE_TYPE)
 
@@ -375,9 +349,17 @@ class SocialHandler:
             }
 
         return {"body": self.body}
+        # return {"body": dict(os.environ)}
+
 
 def main(args):
     """Main process routine"""
+    # return {"body": args}
 
     s = SocialHandler()
     return s.route_request(args)
+
+
+# TODO: revoke hook
+# TODO: list subscriptions
+# TODO: subprocess strategy
