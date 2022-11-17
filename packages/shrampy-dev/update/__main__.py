@@ -97,10 +97,6 @@ class SocialHandler:
         return mapped_accounts
 
     @cached_property
-    def discord_channel(self):
-        return self.dh.get_channel(id=os.environ["DISCORD_CHANNEL"])
-
-    @cached_property
     def twitch_event_subs(self):
         return self.th.get_eventsub_subscriptions()
 
