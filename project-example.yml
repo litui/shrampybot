@@ -13,7 +13,8 @@ packages:
       OVERRIDE_TOKEN: MAKEYOUROWNABOUTTHISLENGTH
     parameters: 
       cross_instance_account_map:
-        litui@gsg.live: litui
+        litui@gsg.live: 
+          twitch_id: litui
       twitch_category_hashtag_map:
         'Music': '#music'
         'ASMR': '#asmr'
