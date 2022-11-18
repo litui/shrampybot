@@ -185,9 +185,10 @@ class SocialHandler:
             )
         stream_url = "https://twitch.tv/{}".format(user_name)
         stream_title = stream.get("title", "")
+        broadcaster = focus_logins.get(user_login.lower())
         message = "@{} is now doing {} on Twitch: {}\n\n{}\n\n#gsg {}\n#{}" \
                   .format(
-                    focus_logins.get(user_login.lower()),
+                    broadcaster,
                     category,
                     stream_url,
                     stream_title,
@@ -199,7 +200,7 @@ class SocialHandler:
             visibility='public',
             media_ids=media_ids,
             sensitive=mature,
-            spoiler_text="Adult {} stream".format(category) if mature else None
+            spoiler_text="@{}'s {} stream info (marked as \"mature\" on Twitch)".format(broadcaster, category) if mature else None
         )
         return {
             "body": toot.get("id")
@@ -366,8 +367,3 @@ def main(args):
 
     s = SocialHandler()
     return s.route_request(args)
-
-
-# TODO: revoke hook
-# TODO: list subscriptions
-# TODO: subprocess strategy
