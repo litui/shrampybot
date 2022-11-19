@@ -257,6 +257,13 @@ class SocialHandler:
                 attachment=image,
                 flags=hikari.MessageFlag.SUPPRESS_EMBEDS
                     | hikari.MessageFlag.CROSSPOSTED)
+            try:
+                await client.crosspost_message(
+                    channel=os.environ["DISCORD_CHANNEL"],
+                    message=message
+                )
+            except hikari.HikariError as e:
+                print("Encountered BadRequestError while trying to crosspost: {}".format(e))
             return message
 
     def get_twitch_id_hash(self, id, prefix="TW"):
