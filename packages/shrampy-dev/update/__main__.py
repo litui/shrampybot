@@ -217,14 +217,14 @@ class SocialHandler:
             spoiler_text="@{}'s {} stream info (marked as \"mature\" on Twitch)".format(broadcaster, category) if mature else None
         )
         if self.use_discord:
-            discord_message = "*Via Mastodon ({}):*\n{} is now doing {} on Twitch: {}\n\n{}\n\n[{}]" \
+            discord_message = "*Via Mastodon ({}):*\n\n**{}** is now doing **{}** on Twitch:\n{}\n[{}]\n\n{}" \
                 .format(
                     toot["url"],
                     user_name,
                     category,
-                    stream_url,
                     stream_title,
-                    stream_id_h
+                    stream_id_h,
+                    stream_url
                 )
             self.discord_send_message(discord_message, stream_id_h, thumb)
         return {
