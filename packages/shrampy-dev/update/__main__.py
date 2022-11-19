@@ -376,11 +376,6 @@ class SocialHandler:
                     return self.subscribe_events()
                 if override == "unsubscribe":
                     return self.unsubscribe_all_events()
-                if override == "discord_send":
-                    dismsg = self.body.get("discord_message", "")
-                    if dismsg:
-                        self.discord_send_message(dismsg)
-                        return {"body": {"msg": "success"}}
 
         msg_type = self.headers.get(TWITCH_MESSAGE_TYPE)
 
