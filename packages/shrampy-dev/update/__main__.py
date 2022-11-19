@@ -5,6 +5,9 @@ import urllib.request
 from mastodon import Mastodon
 from twitchAPI.twitch import Twitch
 from twitchAPI.eventsub import EventSub
+import hikari
+from hikari import Intents
+import asyncio
 import hmac, binascii, hashlib
 import json
 
@@ -25,9 +28,19 @@ class SocialHandler:
             "stream.offline": self.stream_offline_cb,
             "channel.raid": self.raidout_cb
         }
-        pass
 
     ### Properties
+
+    @cached_property
+    def dh(self):
+        if self.use_discord:
+            rest = hikari.RESTApp()
+            return rest.acquire(
+                token=os.environ['DISCORD_TOKEN'],
+                token_type=hikari.applications.TokenType.BOT
+            )
+            
+        return None
 
     @cached_property
     def th(self):
@@ -105,10 +118,6 @@ class SocialHandler:
         return mapped_accounts
 
     @cached_property
-    def discord_channel(self):
-        return self.dh.get_channel(id=os.environ["DISCORD_CHANNEL"])
-
-    @cached_property
     def twitch_event_subs(self):
         return self.th.get_eventsub_subscriptions()
 
@@ -176,8 +185,13 @@ class SocialHandler:
         media_ids = []
         mature = stream.get("is_mature", False)
         thumb_url = stream.get("thumbnail_url", "")
+        sized_url = re.sub(
+            "\{width\}x\{height\}",
+            "{}x{}".format(1280, 720),
+            thumb_url)
+        thumb = None
         if thumb_url:
-            thumb = self.fetch_twitch_thumbnail(thumb_url)
+            thumb = self.fetch_twitch_thumbnail(sized_url)
             thumb_desc = "Preview of {}'s stream on Twitch.".\
                          format(user_name)
             media_ids.append(
@@ -197,11 +211,22 @@ class SocialHandler:
                   )
         toot = self.mh.status_post(
             status=message,
-            visibility='public',
+            visibility=os.environ["MASTODON_POST_MODE"],
             media_ids=media_ids,
             sensitive=mature,
             spoiler_text="@{}'s {} stream info (marked as \"mature\" on Twitch)".format(broadcaster, category) if mature else None
         )
+        if self.use_discord:
+            discord_message = "*Via Mastodon ({}):*\n{} is now doing {} on Twitch: {}\n\n{}\n\n[{}]" \
+                .format(
+                    toot["url"],
+                    user_name,
+                    category,
+                    stream_url,
+                    stream_title,
+                    stream_id_h
+                )
+            self.discord_send_message(discord_message, stream_id_h, thumb)
         return {
             "body": toot.get("id")
         }
@@ -216,6 +241,24 @@ class SocialHandler:
 
     ### Functions
 
+    def discord_send_message(self, msg, nonce, attach=None):
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        return loop.run_until_complete(self._discord_send_message(msg, nonce, attach))
+
+    async def _discord_send_message(self, msg, nonce, attach=None):
+        if attach:
+            image = hikari.Bytes(attach, "image.jpg", mimetype="image/jpeg")
+        else:
+            image = None
+        async with self.dh as client:
+            message = await client.create_message(
+                channel=os.environ["DISCORD_CHANNEL"],
+                content=msg,
+                attachment=image,
+                flags=hikari.MessageFlag.SUPPRESS_EMBEDS
+                    | hikari.MessageFlag.CROSSPOSTED)
+            return message
+
     def get_twitch_id_hash(self, id, prefix="TW"):
         # print("Input ID: {}".format(id))
         h = hashlib.md5(id.encode("utf-8"), usedforsecurity=False)
@@ -223,13 +266,9 @@ class SocialHandler:
         # print("Output ID: {}".format(dig))
         return dig
 
-    def fetch_twitch_thumbnail(self, url, width=1280, height=720):
-        sized_url = re.sub(
-            "\{width\}x\{height\}",
-            "{}x{}".format(width, height),
-            url)
+    def fetch_twitch_thumbnail(self, url):
         thumb = b""
-        with urllib.request.urlopen(sized_url) as f:
+        with urllib.request.urlopen(url) as f:
             thumb = f.read()
         return thumb
 
@@ -324,6 +363,7 @@ class SocialHandler:
         self.method = args.get("__ow_method", {})
         self.path = args.get("__ow_path", {})
         self.body_raw = args.get("__ow_body", "")
+        self.use_discord = args.get("post_to_discord", False)
         self.account_map = args.get("cross_instance_account_map", {})
         self.categories = args.get("twitch_category_hashtag_map", {})
         self.body = json.loads(self.body_raw)
@@ -336,6 +376,11 @@ class SocialHandler:
                     return self.subscribe_events()
                 if override == "unsubscribe":
                     return self.unsubscribe_all_events()
+                if override == "discord_send":
+                    dismsg = self.body.get("discord_message", "")
+                    if dismsg:
+                        self.discord_send_message(dismsg)
+                        return {"body": {"msg": "success"}}
 
         msg_type = self.headers.get(TWITCH_MESSAGE_TYPE)
 
