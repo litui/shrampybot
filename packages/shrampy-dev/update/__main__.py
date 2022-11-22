@@ -3,13 +3,13 @@ import re
 from functools import cached_property
 import urllib.request
 from mastodon import Mastodon
-from twitchAPI.twitch import Twitch
+from twitchAPI.twitch import SortMethod, Twitch, TimePeriod, VideoType
 from twitchAPI.eventsub import EventSub
 import hikari
-from hikari import Intents
 import asyncio
 import hmac, binascii, hashlib
 import json
+import datetime
 
 # Notification request headers
 TWITCH_MESSAGE_ID = 'Twitch-Eventsub-Message-Id'.lower()
@@ -18,8 +18,10 @@ TWITCH_MESSAGE_SIGNATURE = 'Twitch-Eventsub-Message-Signature'.lower()
 TWITCH_MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type'.lower()
 
 # Prepend this string to the HMAC that's created from the message
-HMAC_PREFIX = 'sha256=';
+HMAC_PREFIX = 'sha256='
 
+THREE_DAYS = datetime.timedelta(days=3)
+FIVE_MINUTES = datetime.timedelta(minutes=5)
 
 class SocialHandler:
     def __init__(self):
@@ -32,15 +34,16 @@ class SocialHandler:
     ### Properties
 
     @cached_property
-    def dh(self):
+    def dh(self) -> hikari.impl.RESTClientImpl:
+        retval = None
         if self.use_discord:
             rest = hikari.RESTApp()
-            return rest.acquire(
+            retval = rest.acquire(
                 token=os.environ['DISCORD_TOKEN'],
                 token_type=hikari.applications.TokenType.BOT
             )
             
-        return None
+        return retval
 
     @cached_property
     def th(self):
@@ -136,6 +139,9 @@ class SocialHandler:
 
         # Fail if no active streams on query
         user_id = data.get("broadcaster_user_id")
+        user_id_h = self.get_twitch_id_hash(
+            id=user_id, prefix="tu"
+        )
         streams = self.th.get_streams(user_id=user_id).get("data", []);
         if not streams:
             return {
@@ -161,7 +167,7 @@ class SocialHandler:
         stream_id_h = self.get_twitch_id_hash(
             stream.get("id"), prefix="tw"
         )
-        if self.get_toot_by_twitch_id(stream_id_h):
+        if self.get_toot_by_stream_id(stream_id_h):
             return {
                 "body": {
                     "error": "Stream ID {} already posted."
@@ -216,36 +222,121 @@ class SocialHandler:
             sensitive=mature,
             spoiler_text="@{}'s {} stream info (marked as \"mature\" on Twitch)".format(broadcaster, category) if mature else None
         )
+
         if self.use_discord:
-            discord_message = "*Via Mastodon ({}):*\n\n**{}** is now doing **{}** on Twitch:\n{}\n[{}]\n\n{}" \
+            discord_message = "**{}** is now doing **{}** on Twitch:\n{}\n||[{}]||\n\n{}" \
                 .format(
-                    toot["url"],
                     user_name,
                     category,
                     stream_title,
-                    stream_id_h,
+                    user_id_h,
                     stream_url
                 )
-            self.discord_send_message(discord_message, stream_id_h, thumb)
+            self.discord_send_message(discord_message, thumb)
         return {
             "body": toot.get("id")
         }
 
     def stream_offline_cb(self, data):
+        # stream_id = ""
+        # streams = self.th.get_streams(
+        #     user_id=data["broadcaster_user_id"]
+        # )
+        # if streams["data"]:
+        #     stream_id = self.get_twitch_id_hash(
+        #         id=streams["data"][0]["id"],
+        #         prefix="tw"
+        #     )
+        
+        # right_vod = False
+        # vods = self.th.get_videos(
+        #     user_id=data["broadcaster_user_id"],
+        #     period=TimePeriod.DAY,
+        #     first=1,
+        #     video_type=VideoType.ARCHIVE,
+        #     sort=SortMethod.TIME
+        # )
+        # if vods["data"]:
+        #     vod = vods["data"][0]
+        #     print(vod["created_at"])
+        #     when = vod["created_at"] + FIVE_MINUTES 
+        #     if vod["stream_id"] and when > datetime.datetime.now():
+        #         if not stream_id:
+        #             stream_id = self.get_twitch_id_hash(vod["stream_id"]).lower()
+        #         elif stream_id == vod["stream_id"]:
+        #             right_vod = True
+
+        # if self.use_discord and stream_id:
+        #     addition = "*Stream has ended.*"
+
+        #     self.discord_edit_message(
+        #         nonce=":".join([user_id_h, stream_id]),
+        #         addition=addition
+        #     )
+
         print(json.dumps(data))
         return {"body": data}
 
     def raidout_cb(self, data):
+        raid_text = "*{} viewers raided out to https://twitch.tv/{} *" \
+            .format(data['viewers'], data['to_broadcaster_user_name'])
+
+        stream_id = ""
+        user_id_h = self.get_twitch_id_hash(
+            id=data["from_broadcaster_user_id"],
+            prefix="tu"
+        )
+        # streams = self.th.get_streams(
+        #     user_id=data["from_broadcaster_user_id"]
+        # )
+        # if streams["data"]:
+        #     stream_id = self.get_twitch_id_hash(
+        #         id=streams["data"][0]["id"],
+        #         prefix="tw"
+        #     )
+        
+        # right_vod = False
+        # vods = self.th.get_videos(
+        #     user_id=data["from_broadcaster_user_id"],
+        #     period=TimePeriod.DAY,
+        #     first=1,
+        #     video_type=VideoType.ARCHIVE,
+        #     sort=SortMethod.TIME
+        # )
+        # if vods["data"]:
+        #     vod = vods["data"][0]
+        #     print(vod["created_at"])
+        #     when = vod["created_at"] + FIVE_MINUTES 
+        #     if vod["stream_id"] and when > datetime.datetime.now():
+        #         if not stream_id:
+        #             stream_id = self.get_twitch_id_hash(vod["stream_id"]).lower()
+        #         elif stream_id == vod["stream_id"]:
+        #             right_vod = True
+
+        # if not stream_id:
+        #     return {"body": {"error": "could not obtain stream_id"}}
+
+        if self.use_discord and user_id_h:
+            self.discord_edit_message(
+                nonce=user_id_h,
+                addition=raid_text,
+                remove_tag=True
+            )
+
         print(json.dumps(data))
         return {"body": data}
 
     ### Functions
 
-    def discord_send_message(self, msg, nonce, attach=None):
+    def discord_send_message(self, msg, attach=None):
         loop = asyncio.get_event_loop_policy().get_event_loop()
-        return loop.run_until_complete(self._discord_send_message(msg, nonce, attach))
+        return loop.run_until_complete(self._discord_send_message(msg, attach))
 
-    async def _discord_send_message(self, msg, nonce, attach=None):
+    def discord_edit_message(self, nonce, addition="", remove_tag=False):
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        return loop.run_until_complete(self._discord_edit_message(nonce, addition, remove_tag))
+
+    async def _discord_send_message(self, msg, attach=None):
         if attach:
             image = hikari.Bytes(attach, "image.jpg", mimetype="image/jpeg")
         else:
@@ -264,7 +355,69 @@ class SocialHandler:
                 )
             except hikari.HikariError as e:
                 print("Encountered BadRequestError while trying to crosspost: {}".format(e))
-            return message
+        return message
+
+    async def _discord_get_bot_user(self):
+        async with self.dh as client:
+            me = await client.fetch_my_user()
+        return me
+
+    async def _discord_get_recent_messages(self):
+        retmsgs = []
+        me = await self._discord_get_bot_user()
+        async with self.dh as client:
+            messages = await client.fetch_messages(
+                channel=os.environ["DISCORD_CHANNEL"],
+                after=datetime.datetime.now() - THREE_DAYS)
+            for msg in messages:
+                if msg.author.id == me.id:
+                    retmsgs.append(msg)
+        return retmsgs
+
+    async def _discord_edit_message(self, nonce, addition="", remove_tag=False):
+        retval = None
+        sep_nonce = nonce.split(":")
+        if len(sep_nonce) > 1:
+            tag = "||[{}:{}]||\n".format(sep_nonce[0], sep_nonce[1])
+            print("User Hash: {}".format(sep_nonce[0]))
+            print("Stream Hash: {}".format(sep_nonce[1]))
+        else:
+            tag = "||[{}]||\n".format(sep_nonce[0])
+            print("Hash: {}".format(sep_nonce[0]))
+
+        recent_messages = await self._discord_get_recent_messages()
+        last_msg = None
+
+        async with self.dh as client:
+            # Iterates chronologically (forward) so we need to
+            # await the final message containing the nonce, just in case
+
+            for msg in recent_messages:
+                pos = str(msg.content).find(tag)
+                if pos < 0:
+                    print("Nonce not found on {}".format(msg.id))
+                    continue
+                print("Nonce found on {}".format(msg.id))
+
+                last_msg = msg
+
+            if last_msg:
+                first_part = last_msg.content[:pos]
+                if remove_tag:
+                    last_part = last_msg.content[pos+len(tag):]
+                else:
+                    last_part = last_msg.content[pos:]
+
+                new_content = first_part + addition + '\n' + last_part
+
+                print(new_content)
+
+                retval = await client.edit_message(
+                    channel=os.environ["DISCORD_CHANNEL"],
+                    message=msg,
+                    content=new_content
+                )
+        return retval
 
     def get_twitch_id_hash(self, id, prefix="TW"):
         # print("Input ID: {}".format(id))
@@ -279,7 +432,7 @@ class SocialHandler:
             thumb = f.read()
         return thumb
 
-    def get_toot_by_twitch_id(self, twitch_id):
+    def get_toot_by_stream_id(self, twitch_id):
         return self.mh.account_statuses(
             id=self.me.get("id"),
             tagged=twitch_id)
@@ -324,12 +477,12 @@ class SocialHandler:
             #     )
             #     new_streamoff_count += 1
 
-            # if u["id"] not in raidout_users:
-            #     self.eh.listen_channel_raid(
-            #         from_broadcaster_user_id=u["id"],
-            #         callback=self.raid_out_cb
-            #     )
-            #     new_raidout_count += 1
+            if u["id"] not in raidout_users:
+                self.eh.listen_channel_raid(
+                    from_broadcaster_user_id=u["id"],
+                    callback=self.raidout_cb
+                )
+                new_raidout_count += 1
 
         newbies = new_streamon_count + \
             new_streamoff_count + \
