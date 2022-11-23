@@ -278,48 +278,20 @@ class SocialHandler:
         return {"body": data}
 
     def raidout_cb(self, data):
-        raid_text = "*{} viewers raided out to https://twitch.tv/{} *" \
-            .format(data['viewers'], data['to_broadcaster_user_name'])
+        match_text = " viewers raided out to "
+        raid_text = "*{}{}https://twitch.tv/{} *" \
+            .format(data['viewers'], match_text, data['to_broadcaster_user_name'])
 
-        stream_id = ""
         user_id_h = self.get_twitch_id_hash(
             id=data["from_broadcaster_user_id"],
             prefix="tu"
         )
-        # streams = self.th.get_streams(
-        #     user_id=data["from_broadcaster_user_id"]
-        # )
-        # if streams["data"]:
-        #     stream_id = self.get_twitch_id_hash(
-        #         id=streams["data"][0]["id"],
-        #         prefix="tw"
-        #     )
-        
-        # right_vod = False
-        # vods = self.th.get_videos(
-        #     user_id=data["from_broadcaster_user_id"],
-        #     period=TimePeriod.DAY,
-        #     first=1,
-        #     video_type=VideoType.ARCHIVE,
-        #     sort=SortMethod.TIME
-        # )
-        # if vods["data"]:
-        #     vod = vods["data"][0]
-        #     print(vod["created_at"])
-        #     when = vod["created_at"] + FIVE_MINUTES 
-        #     if vod["stream_id"] and when > datetime.datetime.now():
-        #         if not stream_id:
-        #             stream_id = self.get_twitch_id_hash(vod["stream_id"]).lower()
-        #         elif stream_id == vod["stream_id"]:
-        #             right_vod = True
-
-        # if not stream_id:
-        #     return {"body": {"error": "could not obtain stream_id"}}
 
         if self.use_discord and user_id_h:
             self.discord_edit_message(
                 nonce=user_id_h,
                 addition=raid_text,
+                match_text=match_text,
                 remove_tag=True
             )
 
@@ -332,9 +304,9 @@ class SocialHandler:
         loop = asyncio.get_event_loop_policy().get_event_loop()
         return loop.run_until_complete(self._discord_send_message(msg, attach))
 
-    def discord_edit_message(self, nonce, addition="", remove_tag=False):
+    def discord_edit_message(self, nonce, addition="", match_text="", remove_tag=False):
         loop = asyncio.get_event_loop_policy().get_event_loop()
-        return loop.run_until_complete(self._discord_edit_message(nonce, addition, remove_tag))
+        return loop.run_until_complete(self._discord_edit_message(nonce, addition, match_text, remove_tag))
 
     async def _discord_send_message(self, msg, attach=None):
         if attach:
@@ -374,7 +346,9 @@ class SocialHandler:
                     retmsgs.append(msg)
         return retmsgs
 
-    async def _discord_edit_message(self, nonce, addition="", remove_tag=False):
+    async def _discord_edit_message(self, nonce, addition="", match_text="", remove_tag=False):
+        if not match_text:
+            match_text = addition
         retval = None
         sep_nonce = nonce.split(":")
         if len(sep_nonce) > 1:
@@ -387,15 +361,19 @@ class SocialHandler:
 
         recent_messages = await self._discord_get_recent_messages()
         last_msg = None
-
+        pos = 0
         async with self.dh as client:
             # Iterates chronologically (forward) so we need to
             # await the final message containing the nonce, just in case
 
             for msg in recent_messages:
                 pos = str(msg.content).find(tag)
-                if pos < 0:
+                raid_msg_pos = str(msg.content).find(match_text)
+                if pos < 1:
                     print("Nonce not found on {}".format(msg.id))
+                    continue
+                if raid_msg_pos > 0:
+                    print("Already raided out on {}".format(msg.id))
                     continue
                 print("Nonce found on {}".format(msg.id))
 
@@ -414,7 +392,7 @@ class SocialHandler:
 
                 retval = await client.edit_message(
                     channel=os.environ["DISCORD_CHANNEL"],
-                    message=msg,
+                    message=last_msg,
                     content=new_content
                 )
         return retval
