@@ -4,6 +4,7 @@ set -e
 
 virtualenv virtualenv
 source virtualenv/bin/activate
-pip install -U -r requirements.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 deactivate
 
