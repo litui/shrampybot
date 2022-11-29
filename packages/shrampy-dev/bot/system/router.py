@@ -15,7 +15,8 @@ class Router():
         13: "No applicable methods or invalid command.",
         14: "Authentication failed.",
         15: "Key not found in input json: {}",
-        16: "Corrupt json found on input"
+        16: "Corrupt json found on input",
+        17: "Duplicate Twitch message ID; possible replay attack."
     }
 
     def __init__(self):
@@ -72,7 +73,7 @@ class Router():
         )
 
         try:
-            return {"body": await controller.entry_point()}
+            return await controller.entry_point()
         except Exception as e:
             return {"body": self.call_error(5, e)}
 

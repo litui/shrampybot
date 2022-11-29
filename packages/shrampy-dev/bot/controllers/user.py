@@ -23,7 +23,10 @@ class UserController(GenericController):
 
     async def entry_point(self):
         if not await self._admin_auth.check_credentials():
-            return self._router.call_error(14)
+            return {
+                "body": self._router.call_error(14),
+                "statusCode": 403
+            }
 
         return await super().entry_point()
 
@@ -31,12 +34,19 @@ class UserController(GenericController):
         """Delete one or more entries from custom pairs"""
         custom_users = self._body.get("custom_users", [])
         if not custom_users:
-            return self._router.call_error(15, "custom_users")
+            return {
+                "body": self._router.call_error(15, "custom_users"),
+                "statusCode": 400
+            }
+
 
         # Ensure we validate the incoming json.
         for cu in custom_users:
             if not cu.get("mastodon_id") and not cu.get("twitch_login"):
-                return self._router.call_error(16)
+                return {
+                    "body": self._router.call_error(16),
+                    "statusCode": 400
+                }
 
         for cu in custom_users:
             self._s3.del_custom_pair(
@@ -45,11 +55,11 @@ class UserController(GenericController):
             )
         self._s3.refresh_maps()
 
-        return {"success": "true"}
+        return {"body": {"success": "true"}}
 
     async def _get__user_custom(self):
         """Fetch list of custom pairs"""
-        return self._s3.custom_pairs
+        return {"body": self._s3.custom_pairs, "statusCode": 200}
 
     async def _get__user_map(self):
         """Endpoint: /user/map; Method: GET
@@ -61,19 +71,21 @@ class UserController(GenericController):
         full_map = {
             "status": "success"
         }
+        status_code = 200
         try:
             full_map['m_to_t'] = self._s3.mt_map
             full_map['t_to_m'] = self._s3.tm_map
         except:
             full_map["status"] = "failure"
+            status_code = 200
         
-        return full_map
+        return {"body": full_map, "statusCode": status_code}
 
     async def _get__user_twitch(self):
         out_dict = self._s3.twitch_users
         out_dict["status"] = "success"
 
-        return out_dict
+        return {"body": out_dict, "statusCode": 200}
 
     async def _patch__user_map(self):
         """Endpoint: /user/map; Method: PATCH
@@ -104,19 +116,26 @@ class UserController(GenericController):
         if fm_mt_count <= s3_mt_count and \
                 fm_tm_count <= s3_tm_count:
             out_dict["status"] = "success"
+            status_code = 200
         else:
             out_dict["status"] = "failure"
+            status_code = 500
 
-        return out_dict
+        return {"body": out_dict, "statusCode": status_code}
 
     async def _patch__user_twitch(self):
         """Load Twitch users into S3 for each we have mapped."""
 
-        user_list = list(self._s3.mt_map.keys())
-        user_map = self._th.get_twitch_users(user_logins=user_list)
+        # Retrieve cached mastodon users
+        user_list = list(self._s3.tm_map.keys())
+        # Retrieve list of Twitch team members (if any)
+        team_users = [u["user_login"] for u in self._th.team_info.get("users", [])]
+        
+        user_list.extend(team_users)
+        user_map = self._th.get_users(user_logins=list(set(user_list)))
         self._s3.commit_twitch_users(users=user_map)
 
-        return {"status": "success"}
+        return {"body": {"users": list(user_map.keys())}, "statusCode": 200}
 
     async def _post__user_custom(self):
         """Submit a new entry to the custom user map.
@@ -146,4 +165,4 @@ class UserController(GenericController):
             )
         self._s3.refresh_maps()
             
-        return {"status": "success"}
+        return {"body": {"status": "success"}, "statusCode": 200}

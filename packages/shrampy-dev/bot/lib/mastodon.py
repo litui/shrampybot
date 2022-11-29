@@ -30,23 +30,14 @@ class MastodonHandler:
         return accts
 
     @cached_property
-    def twitch_map(self, custom_additions={}):
+    def twitch_map(self):
         self.l(DEBUG, "Compiling mastodon to twitch ID mapping.")
-        map = custom_additions.copy()
-        if map:
-            self.l(DEBUG, "Including custom additions: {}".format(
-                map
-            ))
-
+        map = {}
         map_reverse = {}
         for account in self._accounts:
             for field in account.fields:
                 twitch_id = self._extract_twitch_id_from_url(field.value)
                 if twitch_id:
-                    # self.l(DEBUG, "Mapping {} to {}".format(
-                    #     account.acct,
-                    #     twitch_id
-                    # ))
                     if not map.get(account.acct):
                         map[account.acct] = []
                     if not twitch_id in map[account.acct]:
@@ -86,5 +77,12 @@ class MastodonHandler:
             )
             if len(res) == 1:
                 return res[0].lower()
-        
+
         return None
+
+    def upload_jpeg(self, image, description):
+        return self._mh.media_post(
+            media_file=image,
+            mime_type="image/jpeg",
+            description=description
+        )
