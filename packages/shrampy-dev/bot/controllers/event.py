@@ -135,7 +135,7 @@ class EventController(GenericController):
         login_name = user["login"]
         stream_url = "https://twitch.tv/{}".format(login_name)
         stream_title = stream.get("title", "")
-        mastodon_ids = self._s3.tm_map.get("login_name", [])
+        mastodon_ids = self._s3.tm_map.get(login_name, [])
         category = stream["game_name"]
         tags = self._s3.category_map[category].get("mastodon_tags")
         mature = stream.get("is_mature", False)
