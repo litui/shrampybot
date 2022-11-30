@@ -1,42 +1,38 @@
 parameters: {}
-environment: {}
+environment:
+  AWS_ACCESS_KEY_ID: GETFROMDIGITALOCEAN
+  AWS_SECRET_ACCESS_KEY: GETFROMDIGITALOCEAN
 packages:
   - name: shrampy-dev
     shared: false
     environment:
-      BOT_NAME: RandoBot
       MASTODON_API_URL: GETFROMMASTODON
       MASTODON_API_TOKEN: GETFROMMASTODON
-      MASTODON_POST_MODE: unlisted
       TWITCH_API_KEY: GETFROMTWITCH
       TWITCH_API_SECRET: GETFROMTWITCH
       TWITCH_EVENT_SECRET: MAKEYOUROWNABOUTTHISLENGTH
-      DISCORD_CLIENTID: GETFROMDISCORD
-      DISCORD_SECRET: GETFROMDISCORD
       DISCORD_TOKEN: GETFROMDISCORD
-      DISCORD_GUILD: GETFROMDISCORD
-      DISCORD_CHANNEL: GETFROMDISCORD
-      OVERRIDE_TOKEN: MAKEYOUROWNABOUTTHISLENGTH
-    parameters: 
-      post_to_discord: false
-      cross_instance_account_map:
-        litui@gsg.live: 
-          twitch_id: litui
-      twitch_category_hashtag_map:
-        'Music': '#music'
-        'ASMR': '#asmr'
+      DISCORD_GUILD: 'GETFROMDISCORD'
+      GSG_ADMIN_TOKEN: MAKEYOUROWNSOMEWHATLONGTOKEN
+      AWS_ENDPOINT_URL: GETFROMDIGITALOCEAN
+      AWS_BUCKET: DEFINEFORYOURSELF
+      AWS_DEFAULT_REGION: GETFROMDIGITALOCEAN  # Uncertain if needed
+    parameters: {}
     annotations: {}
     functions:
-      - name: update
-        binary: false
-        main: ""
+      - name: bot
         runtime: python:default
         web: raw
-        websecure: false
         parameters: {}
-        environment:
-          EVENTSUB_URL: THE_WEB_ACCESSIBLE_URL_OF_THIS_SCRIPT
         annotations: {}
+        environment:
+          BOT_NAME: RandoBot
+          STREAMUP_DEBOUNCE_INTERVAL: '600'
+          STREAM_THUMB_RESOLUTION: '1280x720'
+          MASTODON_POST_MODE: unlisted  # or private, or public, etc.
+          TWITCH_TEAM_NAME: OptionalTeamLoginName
+          DISCORD_CHANNEL: 'GETFROMDISCORD'
+          EVENTSUB_URL: THE_WEB_ACCESSIBLE_URL_OF_THIS_SCRIPT/event/twitch
         limits:
           logs: 10
           memory: 256
