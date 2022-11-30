@@ -3,7 +3,7 @@ import os
 import logging
 from logging import DEBUG, INFO, ERROR, WARN
 from functools import cached_property
-from mastodon import Mastodon
+from mastodon import Mastodon, MastodonError
 
 class MastodonHandler:
     def __init__(self):

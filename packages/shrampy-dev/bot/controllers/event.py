@@ -4,8 +4,9 @@ from logging import DEBUG, WARN, ERROR, INFO
 from auth.admin import AdminAuthenticator
 from auth.twitch import TwitchAuthenticator
 from lib.s3 import S3, CachedDataRetrievalError
-from lib.mastodon import MastodonHandler
+from lib.mastodon import MastodonHandler, MastodonError
 from lib.twitch import TwitchHandler
+from lib.discord import DiscordHandler, DiscordError
 from lib.helper import twitch_date, fetch_twitch_thumb
 from controllers.generic import GenericController
 from datetime import timedelta, datetime
@@ -22,6 +23,7 @@ class EventController(GenericController):
 
         self._mh = MastodonHandler()
         self._th = TwitchHandler()
+        self._dh = DiscordHandler()
         self._s3 = S3()
 
         self._message_type = self._headers.get(
@@ -160,8 +162,6 @@ class EventController(GenericController):
         else:
             streamers = display_name
 
-        await asyncio.sleep(0.5)
-
         # Formulate (English for now) message
         message = "{} {} now streaming {} on Twitch: {}\n\n{}\n\n{}" \
             .format(
@@ -173,25 +173,60 @@ class EventController(GenericController):
                 tags
             )
 
-        toot = self._mh._mh.status_post(
-            status=message,
-            visibility=self._env["MASTODON_POST_MODE"],
-            media_ids=media_ids,
-            sensitive=mature,
-            spoiler_text=None,
-            idempotency_key=stream["id"]
-        )
-        meta["last_toot"] = toot.id
+        try:
+            toot = self._mh._mh.status_post(
+                status=message,
+                visibility=self._env["MASTODON_POST_MODE"],
+                media_ids=media_ids,
+                sensitive=mature,
+                spoiler_text=None,
+                idempotency_key=stream["id"]
+            )
+            toot_id = toot.id
+            meta["last_toot"] = toot_id
+            self.l(INFO, "Toot sent: {}".format(toot_id))
+        except MastodonError as e:
+            self.l(WARN, "Could not post or retrieve posted toot ID. Probably a repost.")
+            toot_id = -1
+        
         # Meta must be saved outside this function.
 
-        self.l(INFO, "Toot sent: {}".format(toot.id))
-        
         await asyncio.sleep(0.5)
         return toot.id
 
-    async def _new_discord_msg(self, user, stream, meta, thumb_url=""):
+    async def _new_discord_msg(self, user, stream, meta={}, thumb=b""):
+        self.l(INFO, "Preparing Discord message.")
+        display_name = user["display_name"]
+        login_name = user["login"]
+        stream_url = "https://twitch.tv/{}".format(login_name)
+        stream_title = stream.get("title", "")
+        category = stream["game_name"]
+
+        # Formulate (English for now) message
+        message = "**{}** is now streaming **{}** on Twitch:\n{}\n\n{}" \
+            .format(
+                display_name,
+                category,
+                stream_title,
+                stream_url
+            )
+
+        try:
+            post = await self._dh.send_message(
+                msg=message,
+                image=thumb
+            )
+            post_id = post.id
+            meta["last_discord_post"] = post.id
+            self.l(INFO, "Discord post sent: {}".format(post.id))
+        except:
+            self.l(WARN, "Could not post/retrieve Discord post ID.")
+            post_id = -1
+
+        # Meta must be saved outside this function.
+
         await asyncio.sleep(0.5)
-        return -1
+        return post.id
 
     # TWITCH EVENTSUB CALLBACKS
 
@@ -220,26 +255,41 @@ class EventController(GenericController):
             raise CachedDataRetrievalError()
         user = users.pop()
         user_login = user["login"]
+        meta = self._s3.stream_meta.get(user_id, {})
+
+        # If event id is duplicate, exit fast
+        # Might mean the previous call took too long for Twitch
+        event_id = event["id"]
+        last_event_id = meta.get("last_event_id")
+        if last_event_id == event_id:
+            self.l(WARN, "Received duplicate event: {}. Stopping.".format(
+                event_id
+            ))
+            return
+        meta["last_event_id"] = event_id
         
         self.l(INFO, "Checking if debounce is needed.")
         # Check last stream disconnect time (in seconds)
         interval = int(
             self._env.get("STREAMUP_DEBOUNCE_INTERVAL", "600")
         )
-        meta = self._s3.stream_meta.get(user_id, {})
-        if meta:
-            last_ended = meta.get("last_stream_ended", 0)
+        last_ended = meta.get("last_stream_ended")
+        if last_ended:
             delta = received_time - last_ended
             if delta <= interval:
                 self.l(WARN, "Debouncing new stream posting due to "
                     "too short an offline time.")
                 return
 
+        # Get stream information
         self.l(INFO, "Retrieving live stream information.")
-        # Get and cache stream information
         stream = self._th.get_stream_by_user_id(user_id)
-        self._s3.update_stream_cache(user_id, stream)
         self.l(INFO, "Stream ID: {}".format(stream["id"]))
+
+        # Debounce duplicate stream ID (different from event ID)
+        if stream["id"] == meta["last_stream_id"]:
+            self.l(WARN, "Received same stream notification twice in a row. Stopping.")
+            return
         
         self.l(INFO, "Checking stream category.")
         # Check if stream category is one we care about
@@ -250,22 +300,25 @@ class EventController(GenericController):
             )
             return
 
-        # Record stream ID
+        # Record stream info now that we know it makes sense to
+        self._s3.update_stream_cache(user_id, stream)
         meta["last_stream_id"] = stream["id"]
 
         self.l(INFO, "Preparing thumbnail.")
         thumb = fetch_twitch_thumb(stream["thumbnail_url"])
-        thumb_url = self._s3.stow_thumb_as_file(stream["id"], thumb)
+        # thumb_url = self._s3.stow_thumb_as_file(stream["id"], thumb)
         
         loop = asyncio.get_event_loop_policy().get_event_loop()
         toot_id, discord_id = await asyncio.gather(
             self._new_mastodon_msg(user, stream, meta, thumb),
-            self._new_discord_msg(user, stream, meta, thumb_url),
+            self._new_discord_msg(user, stream, meta, thumb),
             loop=loop
         )
 
         # Mandatory updating of stream meta.
         self._s3.update_stream_meta(user_id, meta)
+
+        # No return value from callback
 
     async def _stream_offline_cb(self, event):
         user_id = event["broadcaster_user_id"]
