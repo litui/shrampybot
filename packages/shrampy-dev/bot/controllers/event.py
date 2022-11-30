@@ -287,7 +287,7 @@ class EventController(GenericController):
         self.l(INFO, "Stream ID: {}".format(stream["id"]))
 
         # Debounce duplicate stream ID (different from event ID)
-        if stream["id"] == meta["last_stream_id"]:
+        if stream["id"] == meta.get("last_stream_id"):
             self.l(WARN, "Received same stream notification twice in a row. Stopping.")
             return
         
