@@ -1,3 +1,0 @@
-Mastodon.py==1.7.0
-twitchAPI==2.5.7.1
-hikari==2.0.0.dev112
