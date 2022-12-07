@@ -1,9 +1,18 @@
 FROM python:3
+LABEL org.opencontainers.image.source=https://github.com/litui/shrampybot
+LABEL org.opencontainers.image.description="ShrampyBot Backend"
+LABEL org.opencontainers.image.licenses=MIT
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-WORKDIR /gsg
-COPY requirements.txt /gsg/
+WORKDIR /gsg/backend
+COPY ./yennifer.crt /usr/local/share/ca-certificates
+RUN update-ca-certificates
+COPY requirements.txt /gsg/backend/
 RUN pip install -r requirements.txt
-COPY . /gsg/
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-CMD ["uwsgi", "--http", "0.0.0.0:5050", "--module", "shrampybot.wsgi"]
+RUN useradd -ms /bin/bash shrampybot
+RUN addgroup shrampybot www-data
+RUN chown -R www-data:www-data /gsg
+USER shrampybot
+COPY . /gsg/backend/
+USER root
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

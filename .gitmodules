@@ -1,3 +1,0 @@
-[submodule "packages/shrampy-dev/bot/lib/bucketstore"]
-	path = packages/shrampy-dev/bot/lib/bucketstore
-	url = https://github.com/jpetrucciani/bucketstore

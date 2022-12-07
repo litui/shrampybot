@@ -10,5 +10,6 @@ shrampy-prod
 virtualenv
 .vscode
 *.http
-settings.py
 *.sqlite3
+*.env
+docker-compose.yml

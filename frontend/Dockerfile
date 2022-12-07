@@ -1,9 +1,13 @@
-FROM node:lts-alpine
-RUN npm install -g http-server
-WORKDIR /vue
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+FROM node:14
+
+WORKDIR /gsg/frontend
+
+COPY . /gsg/frontend
+
+EXPOSE 828
+
+RUN npm install http-server -g
+
+RUN npm install --omit=optional && npm run build
+
+CMD http-server ./dist -r -U -p 828
