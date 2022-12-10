@@ -1,8 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-
+import { createRouter, createWebHistory, RouteRecordRaw, RouteRecord } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import { useUserStore } from '../stores/user'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AppLayout from '../layouts/AppLayout.vue'
 import Page404Layout from '../layouts/Page404Layout.vue'
+import axios from 'axios'
 
 import RouteViewComponent from '../layouts/RouterBypass.vue'
 import UIRoute from '../pages/admin/ui/route'
@@ -15,6 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'admin',
     path: '/admin',
+    meta: { requiresAuth: true },
     component: AppLayout,
     children: [
       {
@@ -118,6 +121,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: 'tables',
         path: 'tables',
+        meta: { requiresAuth: true },
         component: RouteViewComponent,
         children: [
           {
@@ -141,6 +145,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: 'pages',
         path: 'pages',
+        meta: { requiresAuth: true },
         component: RouteViewComponent,
         children: [
           {
@@ -164,8 +169,13 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         name: 'login',
-        path: 'login',
-        component: () => import('../pages/auth/login/Login.vue'),
+        path: 'login_oauth',
+        component: () => import('../pages/auth/login/LoginOAuth.vue'),
+      },
+      {
+        name: 'validate_oauth',
+        path: 'validate_oauth',
+        component: () => import('../pages/auth/login/ValidateOAuth.vue'),
       },
       {
         name: 'signup',
@@ -217,4 +227,90 @@ const router = createRouter({
   routes,
 })
 
+router.beforeEach(async (to: any, from: any, next) => {
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
+
+  if (UserStore.$state.self.isLoggedIn === true) {
+    next()
+    return
+  }
+
+  // instead of having to check every route record with
+  // to.matched.some(record => record.meta.requiresAuth)
+  if (to.meta.requiresAuth) {
+    if (AuthStore.$state.accessToken !== '') {
+      next(await validateAndFetchUser(to))
+    } else {
+      next('/auth/login_oauth')
+    }
+    return
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+  }
+  next()
+})
+
 export default router
+
+const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
+
+  const token = AuthStore.$state.accessToken
+  const path = '/api/streamers/self'
+
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  }
+
+  try {
+    const bearerResponse = await axios.get(path, axiosConfig)
+    UserStore.$state.self = bearerResponse.data.self
+  } catch (error: any) {
+    if (error.response.status == 401) {
+      const refresh_token = AuthStore.$state.refreshToken
+      const refresh_path = '/api/token/refresh/'
+
+      try {
+        const refreshResponse = await axios.post(
+          refresh_path,
+          {
+            refresh: refresh_token,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        AuthStore.$state.accessToken = refreshResponse.data.access
+        route_path = await validateAndFetchUser(route_path)
+      } catch (refreshError: any) {
+        UserStore.$state.self = {
+          isLoggedIn: false,
+        }
+        AuthStore.$state.refreshToken = ''
+        AuthStore.$state.accessToken = ''
+        route_path = {
+          name: 'login',
+          path: '/auth/login_oauth',
+        } as RouteRecordRaw
+      }
+    } else if (error.response.status == 500) {
+      UserStore.$state.self = {
+        isLoggedIn: false,
+      }
+      AuthStore.$state.refreshToken = ''
+      AuthStore.$state.accessToken = ''
+      route_path = {
+        name: 'login',
+        path: '/auth/login_oauth',
+      } as RouteRecordRaw
+    }
+  }
+  return route_path
+}

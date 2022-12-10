@@ -17,6 +17,7 @@ from django.urls import path
 from streamer.views import (
     StreamerView,
     StreamerCreateView,
+    StreamerSelfView,
     StreamerDeleteView,
     StreamerUpdateView
 )
@@ -24,6 +25,7 @@ from streamer.views import (
 urlpatterns = [
     path('', StreamerView.as_view()),
     path('create', StreamerCreateView.as_view()),
+    path('self', StreamerSelfView.as_view()),
     path('<int:pk>', StreamerUpdateView.as_view()),
     path('<int:pk>/delete', StreamerDeleteView.as_view())
 ]

@@ -13,6 +13,3 @@ class Streamer(models.Model):
     twitch_uri_in_mastodon_fields = models.BooleanField(null=False, default=False)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
-
-class Meta:
-    db_table = "streamer"

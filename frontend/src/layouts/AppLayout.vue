@@ -22,23 +22,58 @@
   </div>
 </template>
 
-<script setup>
-  import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+<script setup lang="ts">
+  import { computed, onBeforeMount, onBeforeUnmount, onMounted, watchEffect, inject, ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { onBeforeRouteUpdate } from 'vue-router'
 
+  import { useAuthStore } from '../stores/auth'
+  import { useUserStore } from '../stores/user'
   import { useGlobalStore } from '../stores/global-store'
+  import { useTimer } from 'vue-timer-hook'
+
+  import { AxiosInstance, AxiosRequestConfig } from 'axios'
 
   import Navbar from '../components/navbar/Navbar.vue'
   import Sidebar from '../components/sidebar/Sidebar.vue'
 
+  /* Set default colour scheme to dark */
+  import { useColors } from 'vuestic-ui'
+  const { applyPreset, setColors } = useColors()
+
+  const router = useRouter()
+
+  watchEffect(() => {
+    applyPreset('dark')
+    setColors({
+      primary: '#FFBB22',
+      secondary: '#FFFFFF',
+      danger: '#E42222',
+    })
+  })
+
+  const axios = inject('axios') as AxiosInstance
+  const axiosConfig = inject('axiosConfig') as AxiosRequestConfig
+
   const GlobalStore = useGlobalStore()
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
 
   const mobileBreakPointPX = 640
   const tabletBreakPointPX = 768
 
   const sidebarWidth = ref('16rem')
-  const sidebarMinimizedWidth = ref(undefined)
+  const sidebarMinimizedWidth = ref('')
+
+  const time = new Date()
+  time.setSeconds(time.getSeconds() + 60)
+  const timer = useTimer(time)
+  const heartbeatTimerRestart = () => {
+    const time = new Date()
+    time.setSeconds(time.getSeconds() + 60)
+    timer.restart(time.getSeconds())
+  }
 
   const isMobile = ref(false)
   const isTablet = ref(false)
@@ -56,6 +91,13 @@
   }
 
   onMounted(() => {
+    heartbeatTimerRestart()
+    watchEffect(async () => {
+      if (timer.isExpired.value) {
+        heartbeatTimerRestart()
+      }
+    })
+
     window.addEventListener('resize', onResize)
   })
 

@@ -23,7 +23,7 @@ export const COLOR_THEMES = [
   {
     name: THEME_NAMES.DARK,
     colors: {
-      primary: '#6F92DA',
+      primary: '#FFBB22',
       secondary: '#A8AEBA',
       success: '#3d9209',
       info: '#2c82e0',
@@ -56,7 +56,7 @@ export const COLOR_THEMES = [
 ]
 
 export function useTheme() {
-  const themeNameRef = ref(THEME_NAMES.LIGHT)
+  const themeNameRef = ref(THEME_NAMES.DARK)
   const { mergeGlobalConfig } = useGlobalConfig()
 
   const setTheme = (themeName: keyof typeof THEME_NAMES) => {

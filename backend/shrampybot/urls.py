@@ -29,5 +29,6 @@ urlpatterns = [
         jwt_views.TokenRefreshView.as_view(),
         name ='token_refresh'
     ),
-    path('api/streamer/', include('streamer.urls'))
+    path('api/services/', include('service.urls')),
+    path('api/streamers/', include('streamer.urls'))
 ]

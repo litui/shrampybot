@@ -51,6 +51,6 @@
     emailErrors.value = email.value ? [] : ['Email is required']
     passwordErrors.value = password.value ? [] : ['Password is required']
 
-    useRouter().push({ name: 'dashboard' })
+    // useRouter().push({ name: 'dashboard' })
   }
 </script>

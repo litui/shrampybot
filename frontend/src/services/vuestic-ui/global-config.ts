@@ -6,7 +6,7 @@ export default {
   // colors: {
   //   presets: {
   //     original: {
-  //       ...COLOR_THEMES[3].colors,
+  //       ...COLOR_THEMES[0].colors,
   //     },
   //   },
   // },

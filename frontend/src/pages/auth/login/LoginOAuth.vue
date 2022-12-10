@@ -1,0 +1,54 @@
+<template>
+  <div class="row">
+    <div class="flex" width="100%">
+      <div class="item">
+        <va-button color="info" gradient size="large" :onclick="redirect_func">
+          <mastodon-logo class="logo"></mastodon-logo>
+        </va-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import MastodonLogo from '../../../Components/logos/MastodonLogo.vue'
+  import { computed, ref, inject, onBeforeMount } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
+  import { useAuthStore } from '../../../stores/auth'
+  import { useUserStore } from '../../../stores/user'
+  import axios from 'axios'
+
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
+
+  const { t } = useI18n()
+
+  async function redirect_func() {
+    const response = await axios.get('/api/services/mastodon-gsglive', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (response.status === 200) {
+      let target_url = response.data.oauth_login_url
+
+      let return_path = window.location.origin
+      let return_endpoint = '/auth/validate_oauth'
+      let return_encoded = encodeURIComponent(return_path + return_endpoint)
+      let scope = response.data.broad_scope.replace(/ /g, '+')
+      let client_id = response.data.api_client_id
+
+      let final_url = `${target_url}?redirect_uri=${return_encoded}&client_id=${client_id}&response_type=code&force_login=true&scope=${scope}`
+      console.log(final_url)
+
+      window.location.href = final_url
+    }
+  }
+
+  onBeforeMount(() => {
+    AuthStore.$state.accessToken = ''
+    AuthStore.$state.refreshToken = ''
+    UserStore.$state.self = {}
+  })
+</script>

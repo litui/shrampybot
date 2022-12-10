@@ -1,6 +1,6 @@
 <template>
   <div class="app-navbar-actions">
-    <color-dropdown class="app-navbar-actions__item" />
+    <!-- <color-dropdown class="app-navbar-actions__item" /> -->
     <message-dropdown class="app-navbar-actions__item" />
     <notification-dropdown class="app-navbar-actions__item" />
     <!-- <settings-dropdown class="app-navbar-actions__item" /> -->
@@ -16,18 +16,14 @@
   import ProfileDropdown from './dropdowns/ProfileDropdown.vue'
   import NotificationDropdown from './dropdowns/NotificationDropdown.vue'
   import MessageDropdown from './dropdowns/MessageDropdown.vue'
-  import ColorDropdown from './dropdowns/ColorDropdown.vue'
+  import { useAuthStore } from '../../../stores/auth'
+  import { useUserStore } from '../../../stores/user'
+  // import ColorDropdown from './dropdowns/ColorDropdown.vue'
 
-  withDefaults(
-    defineProps<{
-      userName?: string
-      isTopBar?: boolean
-    }>(),
-    {
-      userName: '',
-      isTopBar: false,
-    },
-  )
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
+
+  const userName = UserStore.$state.self['username']
 
   defineEmits<{
     (e: 'update:isTopBar', isTopBar: boolean): void

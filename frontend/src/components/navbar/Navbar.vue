@@ -15,7 +15,7 @@
     </template>
     <template #center>
       <div class="app-navbar-center">
-        <span class="app-navbar-center__text mr-2">{{ t('navbar.messageUs') }}</span>
+        <!-- <span class="app-navbar-center__text mr-2">{{ t('navbar.messageUs') }}</span>
         <a
           class="app-navbar-center__mail mr-2"
           href="mailto:hello@epicmax.co"
@@ -32,7 +32,7 @@
           target="_blank"
         >
           {{ t('navbar.repository') }}
-        </va-button>
+        </va-button> -->
       </div>
     </template>
     <template #right>
@@ -47,7 +47,7 @@
   import { useGlobalStore } from '../../stores/global-store'
   import { useI18n } from 'vue-i18n'
   import { useColors } from 'vuestic-ui'
-  import VuesticLogo from '../VuesticLogo.vue'
+  import VuesticLogo from '../logos/GSGLiveLogo.vue'
   import VaIconMenuCollapsed from '../icons/VaIconMenuCollapsed.vue'
   import AppNavbarActions from './components/AppNavbarActions.vue'
 

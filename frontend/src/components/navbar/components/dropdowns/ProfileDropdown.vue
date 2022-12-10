@@ -22,9 +22,14 @@
   import { ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useColors } from 'vuestic-ui'
+  import { useAuthStore } from '../../../../stores/auth'
+  import { useUserStore } from '../../../../stores/user'
 
   const { t } = useI18n()
   const { colors } = useColors()
+
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
 
   withDefaults(
     defineProps<{
@@ -32,10 +37,10 @@
     }>(),
     {
       options: () => [
-        {
-          name: 'profile',
-          redirectTo: '',
-        },
+        // {
+        //   name: 'profile',
+        //   redirectTo: '',
+        // },
         {
           name: 'logout',
           redirectTo: 'login',

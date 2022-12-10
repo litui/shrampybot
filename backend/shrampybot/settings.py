@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'encrypted_model_fields',
+    "service",
     'streamer',
     'stream',
     'event'
@@ -167,7 +169,7 @@ USE_TZ = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 
-STATIC_URL = 'static/'
+STATIC_URL = 'apistatic/'
 
 # AWS Environment Variables
 AWS_S3_ACCESS_KEY_ID = env('AWS_S3_ACCESS_KEY_ID')
@@ -190,3 +192,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+
+# Encryption
+
+FIELD_ENCRYPTION_KEY = env('FIELD_ENCRYPTION_KEY')
+
+CSRF_TRUSTED_ORIGINS = [env('BASE_URL')]
