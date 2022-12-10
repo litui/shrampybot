@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from logging import log, INFO
 from .models import Service, UserService
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, Token
@@ -25,11 +26,15 @@ class ServiceIndividualView(generics.RetrieveAPIView):
     serializer_class = ServiceSerializer
 
     def post(self, request: Request, format=None, name=""):
+        # log(INFO, request.query_params)
         if not request.query_params.get('action') in ['verify_user']:
             return Response(status=400, exception=True)
 
         code = request.data['code']
         referer = request.headers.get('Referer').split('?')[0]
+        print(code)
+        print(name)
+        print(referer)
         if not code or not name or not referer:
             return Response(status=400, exception=True)
 

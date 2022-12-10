@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-  import MastodonLogo from '../../../Components/logos/MastodonLogo.vue'
-  import { computed, ref, inject, onBeforeMount } from 'vue'
-  import { useRouter } from 'vue-router'
+  import MastodonLogo from '../../../components/logos/MastodonLogo.vue'
+  import { onBeforeMount } from 'vue'
+  // import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useAuthStore } from '../../../stores/auth'
   import { useUserStore } from '../../../stores/user'
@@ -40,7 +40,6 @@
       let client_id = response.data.api_client_id
 
       let final_url = `${target_url}?redirect_uri=${return_encoded}&client_id=${client_id}&response_type=code&force_login=true&scope=${scope}`
-      console.log(final_url)
 
       window.location.href = final_url
     }
@@ -49,6 +48,9 @@
   onBeforeMount(() => {
     AuthStore.$state.accessToken = ''
     AuthStore.$state.refreshToken = ''
-    UserStore.$state.self = {}
+    UserStore.$state.self = {
+      username: '',
+      isLoggedIn: false,
+    }
   })
 </script>

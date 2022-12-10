@@ -13,4 +13,5 @@ virtualenv
 *.http
 *.sqlite3
 *.env
+log
 docker-compose.yml

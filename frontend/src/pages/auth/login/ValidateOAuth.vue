@@ -36,8 +36,7 @@
 </template>
 
 <script setup lang="ts">
-  // import MastodonLogo from '../../../Components/logos/MastodonLogo.vue'
-  import MastodonLogo from '../../../Components/logos/MastodonLogo.vue'
+  import MastodonLogo from '../../../components/logos/MastodonLogo.vue'
   import { computed, ref, inject, onMounted, App, getCurrentInstance } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { useI18n } from 'vue-i18n'
@@ -45,6 +44,7 @@
   import type { AxiosInstance } from 'axios'
   import { useAuthStore } from '../../../stores/auth'
   import { useUserStore } from '../../../stores/user'
+import { isString } from 'lodash'
 
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
@@ -71,13 +71,18 @@
   const getQueryParams = async () => {
     await router.isReady()
     let code = route.query.code
-    if (!code) {
-      console.log(route.redirectedFrom)
+    let error = route.query.error
+
+    if (error === 'access_denied') {
+      encountered_error(route.query.error_description)
+      return false
+    }
+
+    if (!isString(code)) {
+      encountered_error('This is not a useful page.')
       return false
     }
     let path = '/services/mastodon-gsglive?action=verify_user'
-
-    console.log(document.URL.split('?')[0])
 
     await axios
       .post(path, {
@@ -86,7 +91,6 @@
       .then(async (response) => {
         oauth_progress.value = 33
         progress_title.value = t('auth.title_oauth_generating')
-        console.log(response.data)
         await jwt_authenticate(response.data.username, response.data.temp_password)
       })
       .catch((reason) => {

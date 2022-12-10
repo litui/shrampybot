@@ -15,4 +15,4 @@ RUN chown -R www-data:www-data /gsg
 USER shrampybot
 COPY . /gsg/backend/
 USER root
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "-c", "config/gunicorn/prod.py", "-b", "0.0.0.0:818"]

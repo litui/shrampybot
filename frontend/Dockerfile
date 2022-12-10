@@ -10,4 +10,4 @@ RUN npm install http-server -g
 
 RUN npm install --omit=optional && npm run build
 
-CMD http-server ./dist -r -U -p 828
+CMD http-server -r -U -p 828

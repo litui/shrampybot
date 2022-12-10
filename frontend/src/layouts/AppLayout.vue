@@ -68,7 +68,7 @@
 
   const time = new Date()
   time.setSeconds(time.getSeconds() + 60)
-  const timer = useTimer(time)
+  const timer = useTimer(time.getSeconds())
   const heartbeatTimerRestart = () => {
     const time = new Date()
     time.setSeconds(time.getSeconds() + 60)

@@ -1,5 +1,5 @@
 <template>
-  <svg class="va-icon-vuestic" :height="height" viewBox="30 20 335 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg class="va-icon-vuestic" height="16" viewBox="30 20 335 55" fill="none" xmlns="http://www.w3.org/2000/svg">
     <title>GSG.live</title>
     <path
       d="M83.34,28.23a31.71,31.71,0,0,0-7.42-2.37,47.49,47.49,0,0,0-17.89,0,31.86,31.86,0,0,0-7.42,2.37A16.16,16.16,0,0,0,45.45,32a7.52,7.52,0,0,0-2,5V61.7a7.43,7.43,0,0,0,2,5,16,16,0,0,0,5.16,3.71A31.4,31.4,0,0,0,58,72.79a48,48,0,0,0,17.89,0,31.25,31.25,0,0,0,7.42-2.36,15.86,15.86,0,0,0,5.16-3.71,7.38,7.38,0,0,0,2-5V47.87l-.67-.07a100,100,0,0,0-10.76-.56c-2.79,0-5.8.13-9,.37l-.62,0-1,9.08,1-.17c.95-.16,2.06-.31,3.28-.45,1.07-.11,2.35-.21,3.86-.31,1.29-.09,2.75-.14,4.33-.15v3.69a3.11,3.11,0,0,1-.84,2,8,8,0,0,1-2.67,1.94A18.37,18.37,0,0,1,73,64.75a32.29,32.29,0,0,1-6,.52,31.29,31.29,0,0,1-5.91-.51,19.53,19.53,0,0,1-4.49-1.38,8.06,8.06,0,0,1-2.74-1.94A3.13,3.13,0,0,1,53,59.35v-20a3.16,3.16,0,0,1,.87-2.12,7.82,7.82,0,0,1,2.74-1.93,20.28,20.28,0,0,1,4.49-1.36A34.92,34.92,0,0,1,73,34a18.37,18.37,0,0,1,4.45,1.41,8,8,0,0,1,2.67,1.94A3.11,3.11,0,0,1,81,39.35v3.4h9.53V37a7.47,7.47,0,0,0-2-5A16,16,0,0,0,83.34,28.23Z"
@@ -35,23 +35,23 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import { useColors } from 'vuestic-ui'
-  const { getColor, shiftHSLAColor } = useColors()
+  // import { computed } from 'vue'
+  // import { useColors } from 'vuestic-ui'
+  // const { getColor, shiftHSLAColor } = useColors()
 
-  const props = withDefaults(
-    defineProps<{
-      height?: number | string
-      color?: string
-    }>(),
-    {
-      height: 16,
-      color: 'primary',
-    },
-  )
+  // const props = withDefaults(
+  //   defineProps<{
+  //     height?: number | string
+  //     color?: string
+  //   }>(),
+  //   {
+  //     height: 16,
+  //     color: 'primary',
+  //   },
+  // )
 
-  const colorsComputed = computed(() => {
-    const color = getColor(props.color, 'primary')
-    return { start: color, end: shiftHSLAColor(color, { l: -20 }) }
-  })
+  // const colorsComputed = computed(() => {
+  //   const color = getColor(props.color, 'primary')
+  //   return { start: color, end: shiftHSLAColor(color, { l: -20 }) }
+  // })
 </script>

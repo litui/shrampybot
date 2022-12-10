@@ -23,7 +23,7 @@
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  const userName = UserStore.$state.self['username']
+  const userName = UserStore.$state.self.username
 
   defineEmits<{
     (e: 'update:isTopBar', isTopBar: boolean): void

@@ -223,7 +223,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  //  mode: process.env.VUE_APP_ROUTER_MODE_HISTORY === 'true' ? 'history' : 'hash',
+  // mode: process.env.VUE_APP_ROUTER_MODE_HISTORY === 'true' ? 'history' : 'hash',
   routes,
 })
 
@@ -291,6 +291,7 @@ const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
         route_path = await validateAndFetchUser(route_path)
       } catch (refreshError: any) {
         UserStore.$state.self = {
+          username: '',
           isLoggedIn: false,
         }
         AuthStore.$state.refreshToken = ''
@@ -302,6 +303,7 @@ const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
       }
     } else if (error.response.status == 500) {
       UserStore.$state.self = {
+        username: '',
         isLoggedIn: false,
       }
       AuthStore.$state.refreshToken = ''

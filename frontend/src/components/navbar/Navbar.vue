@@ -52,7 +52,7 @@
   import AppNavbarActions from './components/AppNavbarActions.vue'
 
   const GlobalStore = useGlobalStore()
-  const { t } = useI18n()
+  // const { t } = useI18n()
 
   const { isSidebarMinimized, userName } = storeToRefs(GlobalStore)
 
