@@ -22,11 +22,16 @@ class Command(BaseCommand):
         active_twitch_ids = [u.id for u in user_objects]
 
         for stream in user_objects:
+            try:
+                category = TwitchCategory.objects.get(twitch_id=stream.game_id)
+            except TwitchCategory.DoesNotExist:
+                continue
+
             twitch_stream, created = TwitchStream.objects.update_or_create(
                 defaults={
                     'twitch_id': stream.id,
                     'twitch_account': TwitchAccount.objects.get(twitch_id=stream.user_id),
-                    'twitch_category': TwitchCategory.objects.get(twitch_id=stream.game_id),
+                    'twitch_category': category,
                     'type': stream.type,
                     'title': stream.title,
                     'viewer_count': stream.viewer_count,
