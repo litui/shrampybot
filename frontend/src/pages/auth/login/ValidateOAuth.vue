@@ -2,9 +2,6 @@
   <div class="row">
     <div class="flex" width="100%">
       <div class="item">
-        <va-button color="info" gradient size="large">
-          <mastodon-logo class="logo"></mastodon-logo>
-        </va-button>
         <va-modal v-model="show_modal" hide-default-actions no-dismiss blur>
           <template #default>
             <va-card-title>{{ progress_title }}</va-card-title>
@@ -44,7 +41,7 @@
   import type { AxiosInstance } from 'axios'
   import { useAuthStore } from '../../../stores/auth'
   import { useUserStore } from '../../../stores/user'
-import { isString } from 'lodash'
+  import { isString } from 'lodash'
 
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
@@ -82,16 +79,18 @@ import { isString } from 'lodash'
       encountered_error('This is not a useful page.')
       return false
     }
-    let path = '/services/mastodon-gsglive?action=verify_user'
+    let path = '/services/twitch?action=verify_user'
 
     await axios
       .post(path, {
         code: code,
       })
       .then(async (response) => {
-        oauth_progress.value = 33
-        progress_title.value = t('auth.title_oauth_generating')
-        await jwt_authenticate(response.data.username, response.data.temp_password)
+        oauth_progress.value = 100
+        progress_title.value = t('auth.title_oauth_synchronizing')
+        AuthStore.$state.accessToken = response.data.access
+        AuthStore.$state.refreshToken = response.data.refresh
+        router.push({ name: 'dashboard' })
       })
       .catch((reason) => {
         encountered_error(reason)
@@ -112,25 +111,21 @@ import { isString } from 'lodash'
     router.push({ name: 'login' })
   }
 
-  const jwt_authenticate = async (user: string, password: string) => {
-    let path = '/token/'
-    await axios
-      .post(path, {
-        username: user,
-        password: password,
-      })
-      .then((response) => {
-        oauth_progress.value = 66
-        progress_title.value = t('auth.title_oauth_synchronizing')
-        AuthStore.$state.accessToken = response.data.access
-        AuthStore.$state.refreshToken = response.data.refresh
-        // TODO: Write data sync
-        router.push({ name: 'dashboard' })
-      })
-      .catch((reason) => {
-        encountered_error(reason)
-      })
-  }
+  // const jwt_authenticate = async (user: string, password: string) => {
+  //   let path = '/token/'
+  //   await axios
+  //     .post(path, {
+  //       username: user,
+  //       password: password,
+  //     })
+  //     .then((response) => {
+  //       // TODO: Write data sync
+  //       router.push({ name: 'dashboard' })
+  //     })
+  //     .catch((reason) => {
+  //       encountered_error(reason)
+  //     })
+  // }
 </script>
 
 <style>

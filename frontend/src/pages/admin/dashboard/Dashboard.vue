@@ -1,19 +1,5 @@
 <template>
-  <div class="dashboard">
-    <dashboard-charts />
-
-    <dashboard-info-block />
-
-    <div class="row row-equal">
-      <div class="flex xs12 lg6">
-        <dashboard-tabs @submit="addAddressToMap" />
-      </div>
-
-      <div class="flex xs12 lg6">
-        <DashboardMap ref="dashboardMap" />
-      </div>
-    </div>
-  </div>
+  <div class="dashboard"></div>
 </template>
 
 <script setup lang="ts">

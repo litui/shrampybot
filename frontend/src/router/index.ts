@@ -15,8 +15,8 @@ const routes: Array<RouteRecordRaw> = [
     redirect: { name: 'dashboard' },
   },
   {
-    name: 'admin',
-    path: '/admin',
+    name: 'gsg',
+    path: '/gsg',
     meta: { requiresAuth: true },
     component: AppLayout,
     children: [
@@ -24,6 +24,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'dashboard',
         path: 'dashboard',
         component: () => import('../pages/admin/dashboard/Dashboard.vue'),
+      },
+      {
+        name: 'dashboard-demo',
+        path: 'dashboard-demo',
+        component: () => import('../pages/admin/dashboard/DashboardDemo.vue'),
       },
       {
         name: 'statistics',

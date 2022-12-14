@@ -6,7 +6,10 @@ django-encrypted-model-fields
 django-storages
 django-filter
 django-environ
-psycopg2>=2.8
+channels>=4.0.0
+websockets
+git+https://github.com/truhlik/django-gsheets/#patch-1
+psycopg2-binary>=2.8
 boto3
 Mastodon.py>=1.7.0
 twitchAPI>=3.0.1

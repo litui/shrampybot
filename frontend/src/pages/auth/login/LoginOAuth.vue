@@ -2,8 +2,13 @@
   <div class="row">
     <div class="flex" width="100%">
       <div class="item">
-        <va-button color="info" gradient size="large" :onclick="redirect_func">
-          <mastodon-logo class="logo"></mastodon-logo>
+        <va-button gradient size="large" :onclick="redirect_func">
+          <span>
+            <span class="vuestic-icon mb-3 pt-3">
+              <va-icon name="ion-logo-twitch" size="20px" />
+            </span>
+            Login with Twitch
+          </span>
         </va-button>
       </div>
     </div>
@@ -11,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-  import MastodonLogo from '../../../components/logos/MastodonLogo.vue'
+  // import MastodonLogo from '../../../components/logos/MastodonLogo.vue'
   import { onBeforeMount } from 'vue'
   // import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
@@ -25,7 +30,7 @@
   const { t } = useI18n()
 
   async function redirect_func() {
-    const response = await axios.get('/api/services/mastodon-gsglive', {
+    const response = await axios.get('/api/services/twitch', {
       headers: {
         'Content-Type': 'application/json',
       },

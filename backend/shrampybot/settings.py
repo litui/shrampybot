@@ -57,9 +57,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'encrypted_model_fields',
+    'discordapp',
+    'gsheets',
+    'mastodonapp',
     "service",
     'streamer',
     'stream',
+    'twitchapp',
     'event'
 ]
 
@@ -200,3 +204,11 @@ FIELD_ENCRYPTION_KEY = env('FIELD_ENCRYPTION_KEY')
 CSRF_TRUSTED_ORIGINS = [env('BASE_URL')]
 
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+
+# Google Sheets/Drive mixin
+GSHEETS = {
+    'CLIENT_SECRETS': '{}/gsheets.json'.format(CONFIG_DIR)
+}
+
+GOOGLE_STREAMER_SHEET = env('GOOGLE_STREAMER_SHEET')

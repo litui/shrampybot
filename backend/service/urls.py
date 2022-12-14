@@ -5,7 +5,6 @@ from service.views import (
     ServiceIndividualView,
     ServiceDeleteView,
     ServiceUpdateView,
-    UserServiceValidator
 )
 
 urlpatterns = [

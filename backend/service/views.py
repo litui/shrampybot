@@ -1,3 +1,4 @@
+from django.apps.registry import apps
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from logging import log, INFO
@@ -32,9 +33,6 @@ class ServiceIndividualView(generics.RetrieveAPIView):
 
         code = request.data['code']
         referer = request.headers.get('Referer').split('?')[0]
-        print(code)
-        print(name)
-        print(referer)
         if not code or not name or not referer:
             return Response(status=400, exception=True)
 
@@ -57,38 +55,62 @@ class ServiceIndividualView(generics.RetrieveAPIView):
         
         if oauth_res.status_code in [400, 401]:
             return Response(status=oauth_res.status_code, exception=True)
-        upstream_token = upstream_json['access_token']
-        upstream_scope = upstream_json['scope']
 
-        # Part two: get Mastodon user info if we're talking about Mastodon
-        m = Mastodon(
-            access_token=upstream_token,
-            api_base_url=s_obj.website_url
-        )
-        me = m.me()
-        new_password = User.objects.make_random_password(
-            length=32
-        )
+        upstream_token = upstream_json['access_token']
+        upstream_refresh = upstream_json.get('refresh_token')
+        upstream_scope = upstream_json['scope'] if upstream_json.get('scope') else ''
+
+        # Cross-reference twitch ID
+        from twitchapp.apps import TwitchAppConfig
+        from twitchapp.models import TwitchAccount
+
+        app: TwitchAppConfig = apps.get_app_config('twitchapp')
+        api = app.api
+
+        app.arun(api.set_user_authentication(upstream_token, upstream_scope, upstream_refresh))
+        t_user = app.aiter(api.get_users())[0]
+
+        # check if twitch user is a guild member
+        ta = TwitchAccount.objects.get(twitch_id=t_user.id, deleted=False)
+        if not ta:
+            return Response(status=403)
+
+        # new_password = User.objects.make_random_password(
+        #     length=32
+        # )
 
         u_obj, user_created = User.objects.update_or_create(
             defaults={
                 "is_active": True
             },
-            username=me.username
+            username=ta.login
         )
-        u_obj.set_password(new_password)
-        if not u_obj.check_password(new_password):
-            return Response(status=500, exception=True)
+        if user_created:
+            u_obj.username = ta.login
+
+        # Set and confirm temporary password (used for JWT, for now)
+        # u_obj.set_password(new_password)
+        u_obj.set_unusable_password()
+        # if not u_obj.check_password(new_password):
+        #     return Response(status=500, exception=True)
+
+        # Save auth user
         u_obj.save()
 
+        # Connect auth user with Twitch account 
+        if ta.streamer and not ta.streamer.user:
+            ta.streamer.user = u_obj
+            ta.streamer.save()
+        
+        # Create user service to store third party credentials.
         us_obj, userservice_created = UserService.objects.get_or_create(
             defaults={
-                "identity": me.acct,
+                "identity": ta.login,
                 "service": s_obj,
                 "user": u_obj,
                 "scope": upstream_scope,
                 "user_token": upstream_token,
-                "user_refresh_token": "none"
+                "user_refresh_token": upstream_refresh
             },
             service=s_obj,
             user=u_obj
@@ -98,12 +120,15 @@ class ServiceIndividualView(generics.RetrieveAPIView):
         if not u_obj or not us_obj:
             return Response(status=500, exception=True)
 
-        return Response({
+        jwt_refresh = RefreshToken.for_user(u_obj)
+
+        response = {
             "username": u_obj.username,
-            "temp_password": new_password,
-            "created_user": user_created,
-            "created_userservice": userservice_created
-        })
+            "refresh": str(jwt_refresh),
+            "access": str(jwt_refresh.access_token)
+        }
+
+        return Response(response)
 
 
 class ServiceView(generics.ListAPIView):
@@ -123,77 +148,3 @@ class ServiceDeleteView(generics.DestroyAPIView):
 
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-
-class UserServiceValidator(views.APIView):
-    def post(self, request: Request, format=None, name=""):
-        code = request.data['code']
-        referer = request.headers.get('Referer').split('?')[0]
-        if not code or not name or not referer:
-            return Response(status=400, exception=True)
-
-        s_obj = Service.objects.get(name=name)
-        request_params = {
-            "grant_type": "authorization_code",
-            "code": code,
-            "client_id": s_obj.api_client_id,
-            "client_secret": s_obj.api_secret_key,
-            "redirect_uri": referer,
-            "scope": s_obj.broad_scope
-        }
-
-        # Request from OAuth Provider
-        oauth_res = requests.post(
-            url=s_obj.oauth_endpoint_url,
-            headers={'Content-Type': 'application/json'},
-            json=request_params)
-        upstream_json = oauth_res.json()
-        
-        if oauth_res.status_code in [400, 401]:
-            return Response(status=oauth_res.status_code, exception=True)
-        upstream_token = upstream_json['access_token']
-        upstream_scope = upstream_json['scope']
-
-        # Part two: get Mastodon user info if we're talking about Mastodon
-        m = Mastodon(
-            access_token=upstream_token,
-            api_base_url=s_obj.website_url
-        )
-        me = m.me()
-        new_password = User.objects.make_random_password(
-            length=32
-        )
-
-        u_obj, user_created = User.objects.update_or_create(
-            defaults={
-                "is_active": True
-            },
-            username=me.username
-        )
-        u_obj.set_password(new_password)
-        if not u_obj.check_password(new_password):
-            return Response(status=500, exception=True)
-        u_obj.save()
-
-        us_obj, userservice_created = UserService.objects.get_or_create(
-            defaults={
-                "identity": me.acct,
-                "service": s_obj,
-                "user": u_obj,
-                "scope": upstream_scope,
-                "user_token": upstream_token,
-                "user_refresh_token": "none"
-            },
-            service=s_obj,
-            user=u_obj
-        )
-        us_obj.save()
-
-        if not u_obj or not us_obj:
-            return Response(status=500, exception=True)
-
-        return Response({
-            "username": u_obj.username,
-            "temp_password": new_password,
-            "created_user": user_created,
-            "created_userservice": userservice_created
-        })

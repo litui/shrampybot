@@ -5,7 +5,7 @@ from encrypted_model_fields.fields import EncryptedTextField
 class Service(models.Model):
     name = models.CharField(max_length=255, null=False)
     website_url = models.TextField(null=True)
-    broad_scope = models.TextField(null=False)
+    broad_scope = models.TextField(null=True)
     oauth_login_url = models.TextField(null=True)
     oauth_endpoint_url = models.TextField(null=True)
     oauth_revoke_url = models.TextField(null=True)
@@ -23,7 +23,7 @@ class UserService(models.Model):
     identity = models.CharField(max_length=255, null=True)
     service = models.ForeignKey(Service, on_delete=models.RESTRICT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    scope = models.TextField(null=False, default='read')
+    scope = models.TextField(null=True, default='read')
     user_token = EncryptedTextField(null=False)
     user_refresh_token = EncryptedTextField(null=True)
 
