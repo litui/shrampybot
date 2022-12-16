@@ -1,10 +1,23 @@
 from .models import Streamer
 from rest_framework import serializers
+from twitchapp.serializers import TwitchAccountSerializer
 
 class StreamerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Streamer
-        fields = '__all__'
+        fields = [
+            'identity', 
+            'guild_status', 
+            'shrampybot_announce', 
+            'retired',
+            'retired_date',
+            'twitchaccount'
+        ]
+
+    twitchaccount = TwitchAccountSerializer(
+        many=False,
+        read_only=True
+    )
     # id = serializers.IntegerField()
     # twitch_login = serializers.CharField()
     # twitch_name = serializers.CharField()

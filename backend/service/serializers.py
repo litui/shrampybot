@@ -4,9 +4,21 @@ from rest_framework import serializers
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        exclude = ["api_token", "api_secret_key", "api_refresh_token"]
-    id = serializers.IntegerField()
+        fields = ['name']
+
     name = serializers.CharField()
-    website_url = serializers.CharField()
-    broad_scope = serializers.CharField()
-    oauth_endpoint_url = serializers.CharField()
+
+class OAuthServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = [
+            'name',
+            'website_url',
+            'broad_scope',
+            'oauth_login_url',
+            'oauth_endpoint_url',
+            'oauth_revoke_url',
+            'api_client_id'
+        ]
+
+    # name = serializers.CharField()

@@ -256,21 +256,13 @@ router.beforeEach(async (to: any, from: any, next) => {
   next()
 })
 
-export default router
-
-const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
+export const validateAndFetchUser = async (route_path: any) => {
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  const token = AuthStore.$state.accessToken
-  const path = '/api/streamers/self'
+  const path = '/streamers/self'
 
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  }
+  const axiosConfig = AuthStore.getAxiosConfig()
 
   try {
     const bearerResponse = await axios.get(path, axiosConfig)
@@ -278,7 +270,7 @@ const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
   } catch (error: any) {
     if (error.response.status == 401) {
       const refresh_token = AuthStore.$state.refreshToken
-      const refresh_path = '/api/token/refresh/'
+      const refresh_path = '/token/refresh/'
 
       try {
         const refreshResponse = await axios.post(
@@ -287,6 +279,7 @@ const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
             refresh: refresh_token,
           },
           {
+            baseURL: '/api',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -321,3 +314,5 @@ const validateAndFetchUser = async (route_path: RouteRecordRaw) => {
   }
   return route_path
 }
+
+export default router

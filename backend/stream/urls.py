@@ -13,24 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt import views as jwt_views
+from django.urls import path
+from stream.views import (
+    StreamView
+)
 
 urlpatterns = [
-    path('', include('gsheets.urls')),
-    path('api-admin/', admin.site.urls),
-    # path(
-    #     'api/token/',
-    #     jwt_views.TokenObtainPairView.as_view(),
-    #     name ='token_obtain_pair',
-    # ),
-    path(
-        'api/token/refresh/',
-        jwt_views.TokenRefreshView.as_view(),
-        name ='token_refresh'
-    ),
-    path('api/streams/', include('stream.urls')),
-    path('api/services/', include('service.urls')),
-    path('api/streamers/', include('streamer.urls'))
+    # path('', StreamerView.as_view()),
+    # path('create', StreamerCreateView.as_view()),
+    path('', StreamView.as_view()),
+    # path('<int:pk>', StreamerUpdateView.as_view()),
+    # path('<int:pk>/delete', StreamerDeleteView.as_view())
 ]

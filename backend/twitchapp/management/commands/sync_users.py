@@ -57,11 +57,11 @@ class Command(BaseCommand):
                         account.save()
 
         # Attaching and updating Streamers
-        for account in accounts:
-            if not account.streamer:
-                account.streamer = Streamer(identity=account.display_name)
-            account.streamer.save()
-            account.save()
+        # for account in accounts:
+        #     if not account.streamer:
+        #         account.streamer = Streamer(identity=account.display_name)
+        #         account.streamer.save()
+        #         account.save()
 
         print("Accounts: {}".format(len(accounts)))
         print("User Objects: {}".format(len(user_objects)))

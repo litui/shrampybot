@@ -15,6 +15,9 @@ class Service(models.Model):
     api_refresh_token = EncryptedTextField(null=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    streaming_service = models.BooleanField(null=False, default=True)
+    webhooks_inbound_endpoint = models.TextField(null=True)
+    webhooks_shared_secret = EncryptedTextField(null=True)
 
     def __str__(self):
         return self.name
@@ -26,6 +29,8 @@ class UserService(models.Model):
     scope = models.TextField(null=True, default='read')
     user_token = EncryptedTextField(null=False)
     user_refresh_token = EncryptedTextField(null=True)
+    webhooks_inbound_endpoint = models.TextField(null=True)
+    webhooks_shared_secret = EncryptedTextField(null=True)
 
     def __str__(self):
         return "{} - {}".format(self.user.get_full_name(), self.service.name)

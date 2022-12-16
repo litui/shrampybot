@@ -2,6 +2,7 @@ from django.apps.registry import apps
 from django.db import models
 from django.dispatch import receiver
 from streamer.models import Streamer
+from uuid import uuid4
 from .apps import TwitchAppConfig
 from twitchAPI.twitch import (
     TwitchUser as _TwitchUser,
@@ -79,6 +80,7 @@ class TwitchStream(models.Model):
     started_at = models.DateTimeField(null=False, db_index=True)
     language = models.CharField(max_length=20, null=True)
     thumbnail_url = models.CharField(max_length=255, null=True)
+    thumbnail_image = models.ImageField(null=True, upload_to='uploads/%Y/%m/%d/')
     is_mature = models.BooleanField(null=False, default=False)
     is_active = models.BooleanField(null=False, default=True, db_index=True)
     ended_at = models.DateTimeField(null=True, db_index=True)
@@ -96,3 +98,11 @@ class TwitchStream(models.Model):
         self.language = stream.language
         self.thumbnail_url = stream.thumbnail_url
         self.is_mature = stream.is_mature
+
+    @property
+    def stream(self):
+        from service.models import Service
+        from stream.models import Stream
+        service = Service.objects.get(name='twitch')
+
+        return Stream.objects.get(platform=service, platform_stream_id=self.twitch_id)

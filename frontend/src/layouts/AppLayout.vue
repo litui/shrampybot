@@ -23,23 +23,24 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onBeforeMount, onBeforeUnmount, onMounted, watchEffect, inject, ref } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { computed, onBeforeUnmount, onMounted, watchEffect, inject, ref } from 'vue'
+  import { useRouter, onBeforeRouteUpdate } from 'vue-router'
+  import { validateAndFetchUser } from '../router/index'
   import { storeToRefs } from 'pinia'
-  import { onBeforeRouteUpdate } from 'vue-router'
 
-  import { useAuthStore } from '../stores/auth'
-  import { useUserStore } from '../stores/user'
   import { useGlobalStore } from '../stores/global-store'
   import { useTimer } from 'vue-timer-hook'
-
-  import { AxiosInstance, AxiosRequestConfig } from 'axios'
 
   import Navbar from '../components/navbar/Navbar.vue'
   import Sidebar from '../components/sidebar/Sidebar.vue'
 
   /* Set default colour scheme to dark */
   import { useColors } from 'vuestic-ui'
+
+  import { useAuthStore } from '../stores/auth'
+
+  import { AxiosRequestConfig } from 'axios'
+
   const { applyPreset, setColors } = useColors()
 
   const router = useRouter()
@@ -53,12 +54,7 @@
     })
   })
 
-  const axios = inject('axios') as AxiosInstance
-  const axiosConfig = inject('axiosConfig') as AxiosRequestConfig
-
   const GlobalStore = useGlobalStore()
-  const AuthStore = useAuthStore()
-  const UserStore = useUserStore()
 
   const mobileBreakPointPX = 640
   const tabletBreakPointPX = 768
@@ -66,13 +62,19 @@
   const sidebarWidth = ref('16rem')
   const sidebarMinimizedWidth = ref('')
 
-  const time = new Date()
-  time.setSeconds(time.getSeconds() + 60)
-  const timer = useTimer(time.getSeconds())
-  const heartbeatTimerRestart = () => {
-    const time = new Date()
-    time.setSeconds(time.getSeconds() + 60)
-    timer.restart(time.getSeconds())
+  const time = Date.now()
+  const timer = useTimer(time + 60000)
+  const heartbeatTimerRestart = async () => {
+    const AuthStore = useAuthStore()
+    const axiosConfig = inject('axiosConfig') as AxiosRequestConfig
+    // Revalidate that the current user has permission to view the current route
+    router.push(await validateAndFetchUser(router.currentRoute))
+    axiosConfig.headers = {
+      Authorization: `Bearer ${AuthStore.$state.accessToken}`,
+      'Content-Type': 'application/json',
+    }
+    const time = Date.now()
+    timer.restart(time + 60000)
   }
 
   const isMobile = ref(false)
@@ -91,7 +93,6 @@
   }
 
   onMounted(() => {
-    heartbeatTimerRestart()
     watchEffect(async () => {
       if (timer.isExpired.value) {
         heartbeatTimerRestart()

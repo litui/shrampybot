@@ -10,7 +10,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from .serializers import ServiceSerializer
+from .serializers import ServiceSerializer, OAuthServiceSerializer
 import requests
 from mastodon import Mastodon
 
@@ -24,7 +24,7 @@ class ServiceIndividualView(generics.RetrieveAPIView):
     lookup_field = 'name'
     lookup_url_kwarg = 'name'
     queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
+    serializer_class = OAuthServiceSerializer
 
     def post(self, request: Request, format=None, name=""):
         # log(INFO, request.query_params)

@@ -16,3 +16,4 @@ twitchAPI>=3.0.1
 hikari>=2.0.0.dev112
 markdown
 gunicorn
+Pillow

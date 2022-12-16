@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from django.apps.registry import apps
+from .apps import TwitchAppConfig
+from rest_framework.views import APIView
+
+class TwitchEventSubscribeView (APIView):
+    app: TwitchAppConfig = apps.get_app_config('twitchapp')
+    api = app.api
+
+    
 
 # Create your views here.

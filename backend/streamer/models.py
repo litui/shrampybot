@@ -11,6 +11,7 @@ class Streamer(models.Model):
         SHRAMP = 'shramp', 'Shramp (4+ events)'
         SCAMPI = 'scampi', 'Scampi Shramp (OG)'
 
+    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.RESTRICT, null=True)
     identity = models.CharField(max_length=255, unique=True)
     guild_status = models.CharField(
@@ -45,7 +46,7 @@ class StreamerAct(mixins.SheetSyncableMixin, models.Model):
     notes = models.TextField(null=True)
     alt_email = models.CharField(max_length=255, null=True)
     twitch_account = models.ForeignKey(TwitchAccount, on_delete=models.RESTRICT, null=True)
-    streamer = models.ForeignKey(Streamer, on_delete=models.RESTRICT, null=True)
+    # streamer = models.ForeignKey(Streamer, on_delete=models.RESTRICT, null=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
