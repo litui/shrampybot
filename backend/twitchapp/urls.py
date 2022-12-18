@@ -14,20 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from streamer.views import (
-    # StreamerView,
-    # StreamerCreateView,
-    StreamerSelfView,
-    # StreamerDeleteView,
-    # StreamerUpdateView,
-    StreamerActsListView,
-)
+from . import views
 
 urlpatterns = [
-    # path('', StreamerView.as_view()),
-    # path('create', StreamerCreateView.as_view()),
-    path('self', StreamerSelfView.as_view()),
-    path('acts/', StreamerActsListView.as_view()),
-    # path('<int:pk>', StreamerUpdateView.as_view()),
-    # path('<int:pk>/delete', StreamerDeleteView.as_view())
+    path('eventsub/', views.TwitchEventSubView.as_view())
 ]

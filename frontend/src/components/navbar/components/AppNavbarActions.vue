@@ -1,34 +1,49 @@
 <template>
   <div class="app-navbar-actions">
     <!-- <color-dropdown class="app-navbar-actions__item" /> -->
-    <message-dropdown class="app-navbar-actions__item" />
-    <notification-dropdown class="app-navbar-actions__item" />
+    <!-- <message-dropdown class="app-navbar-actions__item" /> -->
+    <!-- <notification-dropdown class="app-navbar-actions__item" /> -->
     <!-- <settings-dropdown class="app-navbar-actions__item" /> -->
-    <language-dropdown class="app-navbar-actions__item" />
+    <!-- <language-dropdown class="app-navbar-actions__item" /> -->
+    <navbar-conn-indicator></navbar-conn-indicator>
+    <va-spacer />
+    <va-spacer />
     <profile-dropdown class="app-navbar-actions__item app-navbar-actions__item--profile">
-      <span>{{ userName }}</span>
+      <span>{{ user }}</span>
     </profile-dropdown>
   </div>
 </template>
 
 <script setup lang="ts">
-  import LanguageDropdown from './dropdowns/LanguageDropdown.vue'
+  // import LanguageDropdown from './dropdowns/LanguageDropdown.vue'
+  import { onBeforeMount, watchEffect, ref } from 'vue'
   import ProfileDropdown from './dropdowns/ProfileDropdown.vue'
   import NotificationDropdown from './dropdowns/NotificationDropdown.vue'
   import MessageDropdown from './dropdowns/MessageDropdown.vue'
+  import NavbarConnIndicator from './connection/NavbarConnIndicator.vue'
   import { useAuthStore } from '../../../stores/auth'
   import { useUserStore } from '../../../stores/user'
+  import { useWSStore } from '../../../stores/ws'
   // import ColorDropdown from './dropdowns/ColorDropdown.vue'
 
+  const WSStore = useWSStore()
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  const userName = UserStore.$state.self.username
+  const user = ref('')
 
   defineEmits<{
     (e: 'update:isTopBar', isTopBar: boolean): void
   }>()
 
+  UserStore.$subscribe((mutation, state) => {
+    if (state.self.streamer?.identity) {
+      user.value = state.self.streamer?.identity
+    } else {
+      user.value = state.self.username
+    }
+  })
+ 
   // const isTopBarProxy = computed({
   //   get() {
   //     return props.isTopBar

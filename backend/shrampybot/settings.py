@@ -49,12 +49,14 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'encrypted_model_fields',
     'discordapp',
@@ -63,8 +65,7 @@ INSTALLED_APPS = [
     "service",
     'streamer',
     'stream',
-    'twitchapp',
-    'event'
+    'twitchapp'
 ]
 
 MIDDLEWARE = [
@@ -182,6 +183,7 @@ AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
 AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN')
+AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -212,3 +214,14 @@ GSHEETS = {
 }
 
 GOOGLE_STREAMER_SHEET = env('GOOGLE_STREAMER_SHEET')
+
+# Required setup for channels
+ASGI_APPLICATION = "shrampybot.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [env.tuple('REDIS_CHANNELS')],
+        },
+    },
+}

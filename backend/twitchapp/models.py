@@ -99,8 +99,10 @@ class TwitchStream(models.Model):
         self.thumbnail_url = stream.thumbnail_url
         self.is_mature = stream.is_mature
 
-    @property
-    def stream(self):
+    def get_active_twitch_ids():
+        return [i.twitch_id for i in TwitchStream.objects.filter(is_active=True)]
+
+    def get_related_stream(self):
         from service.models import Service
         from stream.models import Stream
         service = Service.objects.get(name='twitch')

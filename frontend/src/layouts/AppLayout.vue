@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onBeforeUnmount, onMounted, watchEffect, inject, ref } from 'vue'
+  import { computed, onBeforeMount, onBeforeUnmount, onMounted, watchEffect, ref } from 'vue'
   import { useRouter, onBeforeRouteUpdate } from 'vue-router'
-  import { validateAndFetchUser } from '../router/index'
+  import { validateAndFetchRoute } from '../router/index'
   import { storeToRefs } from 'pinia'
 
   import { useGlobalStore } from '../stores/global-store'
@@ -36,10 +36,9 @@
 
   /* Set default colour scheme to dark */
   import { useColors } from 'vuestic-ui'
-
   import { useAuthStore } from '../stores/auth'
-
-  import { AxiosRequestConfig } from 'axios'
+  import { useUserStore } from '../stores/user'
+  import { useWSStore } from '../stores/ws'
 
   const { applyPreset, setColors } = useColors()
 
@@ -55,6 +54,9 @@
   })
 
   const GlobalStore = useGlobalStore()
+  const AuthStore = useAuthStore()
+  const UserStore = useUserStore()
+  const WSStore = useWSStore()
 
   const mobileBreakPointPX = 640
   const tabletBreakPointPX = 768
@@ -63,18 +65,15 @@
   const sidebarMinimizedWidth = ref('')
 
   const time = Date.now()
-  const timer = useTimer(time + 60000)
+  const timer = useTimer(time + 1000)
   const heartbeatTimerRestart = async () => {
-    const AuthStore = useAuthStore()
-    const axiosConfig = inject('axiosConfig') as AxiosRequestConfig
-    // Revalidate that the current user has permission to view the current route
-    router.push(await validateAndFetchUser(router.currentRoute))
-    axiosConfig.headers = {
-      Authorization: `Bearer ${AuthStore.$state.accessToken}`,
-      'Content-Type': 'application/json',
+    // Monitor the current state of the websocket connection and refresh if it needs it
+    if (WSStore.$state.connected !== true) {
+      await AuthStore.testAndRefreshToken()
+      WSStore.connectSocket(AuthStore.$state.accessToken)
     }
     const time = Date.now()
-    timer.restart(time + 60000)
+    timer.restart(time + 1000)
   }
 
   const isMobile = ref(false)
@@ -92,7 +91,7 @@
     sidebarWidth.value = isTablet.value ? '100%' : '16rem'
   }
 
-  onMounted(() => {
+  onMounted(async () => {
     watchEffect(async () => {
       if (timer.isExpired.value) {
         heartbeatTimerRestart()
@@ -100,6 +99,10 @@
     })
 
     window.addEventListener('resize', onResize)
+  })
+
+  onBeforeMount(() => {
+    heartbeatTimerRestart()
   })
 
   onBeforeUnmount(() => {

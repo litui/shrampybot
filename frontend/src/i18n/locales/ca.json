@@ -299,6 +299,7 @@
     "persian": "Persian"
   },
   "menu": {
+    "activeStreams": "Active Streams",
     "auth": "Auth",
     "rating": "Rating",
     "buttons": "Buttons",
@@ -345,7 +346,9 @@
     "line-maps": "Line Maps",
     "login-singup": "Login/Signup",
     "404-pages": "404 Pages",
-    "faq": "Faq"
+    "faq": "Faq",
+    "overlays": "Overlays",
+    "wombragen": "Wombragen"
   },
   "messages": {
     "all": "See all messages",
@@ -587,5 +590,20 @@
     "overflow": "Tabs Overflow",
     "hidden": "Tabs with Hidden slider",
     "grow": "Tabs Grow"
+  },
+  "staff": {
+    "staffArea": "Staff Area",
+    "masterList": "Acts (Master List)",
+    "tables": {
+      "visualName": "Visual Name",
+      "twitchUrl": "Twitch URL",
+      "twitchAccount": "Twitch Account",
+      "twitch": "Twitch",
+      "location": "IRL Location",
+      "email": "Email",
+      "now": "Now",
+      "next": "Next",
+      "later": "Later"
+    }
   }
 }

@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
   import MastodonLogo from '../../../components/logos/MastodonLogo.vue'
-  import { computed, ref, inject, onMounted, App, getCurrentInstance } from 'vue'
+  import { computed, ref, onMounted, App, getCurrentInstance } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import router from '../../../router'
@@ -42,11 +42,12 @@
   import { useAuthStore } from '../../../stores/auth'
   import { useUserStore } from '../../../stores/user'
   import { isString } from 'lodash'
+  import axios from 'axios'
 
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  const axios = inject('axios') as AxiosInstance
+  // const axios = inject('axios') as AxiosInstance
 
   const { t } = useI18n()
 
@@ -79,7 +80,7 @@
       encountered_error('This is not a useful page.')
       return false
     }
-    let path = '/services/twitch?action=verify_user'
+    let path = '/api/services/twitch?action=verify_user'
 
     await axios
       .post(path, {

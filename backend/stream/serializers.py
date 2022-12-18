@@ -9,11 +9,12 @@ from rest_framework import serializers
 class StreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stream
-        fields = ['guid', 'platform', 'main_streamer', 'platform_stream']
+        fields = ['guid', 'main_streamer', 'twitch_stream']
 
     main_streamer = StreamerSerializer(read_only=True, many=False)
-    platform = ServiceSerializer(read_only=True, many=False)
-    platform_stream = TwitchStreamSerializer(Stream.platform_stream)
+    # platform = ServiceSerializer(read_only=True, many=False)
+    twitch_stream = TwitchStreamSerializer(instance=TwitchStream)
+    # platform_stream = TwitchStreamSerializer()
 
 # class AlbumSerializer(serializers.ModelSerializer):
 #     tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

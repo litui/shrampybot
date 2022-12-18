@@ -19,4 +19,5 @@ RUN pip install --user -r requirements.txt
 
 COPY . /gsg/backend/
 
-CMD ["gunicorn", "-c", "config/gunicorn/prod.py", "-b", "0.0.0.0:8188"]
+CMD ["./manage.py", "runserver", "0.0.0.0:8188"]
+

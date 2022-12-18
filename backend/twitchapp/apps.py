@@ -25,8 +25,7 @@ class TwitchAppConfig(AppConfig):
 
             stream, created = Stream.objects.update_or_create(
                 main_streamer=ts.twitch_account.streamer,
-                platform=Service.objects.get(name="twitch"),
-                platform_stream_id=ts.twitch_id
+                twitch_stream=ts
             )
 
         from .models import TwitchAccount
@@ -37,7 +36,7 @@ class TwitchAppConfig(AppConfig):
 
             ta.streamer, created = Streamer.objects.update_or_create(
                 defaults={
-                    "identity": ta.display_name
+                    "identity": ta.display_name if ta.display_name else ta.login
                 },
                 identity=ta.display_name
             )

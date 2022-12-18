@@ -26,9 +26,14 @@ urlpatterns = [
     #     name ='token_obtain_pair',
     # ),
     path(
+        'api/token/verify/',
+        jwt_views.TokenVerifyView.as_view(),
+        name='token_verify'
+    ),
+    path(
         'api/token/refresh/',
         jwt_views.TokenRefreshView.as_view(),
-        name ='token_refresh'
+        name='token_refresh'
     ),
     path('api/streams/', include('stream.urls')),
     path('api/services/', include('service.urls')),

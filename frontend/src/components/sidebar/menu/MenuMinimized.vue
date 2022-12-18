@@ -10,7 +10,7 @@
     <template #anchor>
       <va-sidebar-item :active="isItemChildsActive(route)" :to="route.children ? undefined : { name: route.name }">
         <va-sidebar-item-content>
-          <va-icon :name="route.meta.icon" class="va-sidebar-item__icon" />
+          <va-icon :name="route.meta?.nav?.icon" class="va-sidebar-item__icon" />
           <va-icon
             v-if="route.children"
             class="more_icon"
@@ -24,7 +24,7 @@
         <va-sidebar-item :active="isRouteActive(child)" :to="{ name: child.name }">
           <va-sidebar-item-content>
             <va-sidebar-item-title>
-              {{ t(child.displayName) }}
+              {{ t(child.meta?.nav?.displayName as string) }}
             </va-sidebar-item-title>
           </va-sidebar-item-content>
         </va-sidebar-item>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-  import { INavigationRoute } from '../NavigationRoutes'
+  import { INavigationRoute } from '../../../router'
   import { ref } from 'vue'
   import { useRoute } from 'vue-router'
   import { useI18n } from 'vue-i18n'
