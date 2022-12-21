@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { useUserStore } from './user'
+import { useAuthStore } from './auth'
+import { useLocalStorage } from '@vueuse/core'
 
 interface WSStoreRecord {
   socket: WebSocket
@@ -14,9 +16,12 @@ const echoSocketUrl = socketProtocol + '//' + window.location.hostname + ':' + p
 
 export const useWSStore = defineStore('ws', {
   state: () => {
+    const socket = useLocalStorage('ws_socket', {} as typeof WebSocket)
+    const connected = useLocalStorage('connected', false)
+
     return {
-      socket: {} as WebSocket,
-      connected: false,
+      socket: socket as any,
+      connected: connected as any,
     } as WSStoreRecord
   },
   actions: {
@@ -38,36 +43,41 @@ export const useWSStore = defineStore('ws', {
         }, intervalTime)
       })
     },
-    async sendMessage(message: string) {
-      if (this.socket.readyState !== this.socket.OPEN) {
+    async sendData(jsonData: Record<string, any>) {
+      // Trigger the wait for open connection if we've jumped the gun
+      if (this.socket.readyState !== this.socket.OPEN || this.connected === false) {
         try {
           await this.waitForOpenConnection()
-          this.socket.send(message)
+          this.socket.send(JSON.stringify(jsonData))
         } catch (err) {
           console.error(err)
         }
       } else {
-        this.socket.send(message)
+        this.socket.send(JSON.stringify(jsonData))
       }
     },
     socketOnOpenCallback(event: Event) {
       console.info('Websocket connected.')
       this.connected = true
-
-      this.socket.send(
-        JSON.stringify({
-          class: 'vue.subscribe',
-          group: 'frontend',
-        }),
-      )
     },
     socketOnMessageCallback(event: MessageEvent) {
       const jsonData = JSON.parse(event.data)
+      console.info(jsonData)
 
       if (jsonData.class === 'sb.users.self') {
         const UserStore = useUserStore()
 
         UserStore.setSelf(jsonData.data)
+      } else if (jsonData.class === 'sb.ping') {
+        this.socket.send(
+          JSON.stringify({
+            class: 'vue.pong',
+          }),
+        )
+      } else if (jsonData.class === 'sb.users.services.status') {
+        const AuthStore = useAuthStore()
+
+        AuthStore.userServicesStatus[jsonData.service] = jsonData.data
       }
     },
     socketOnCloseCallback(event: CloseEvent) {
@@ -78,7 +88,16 @@ export const useWSStore = defineStore('ws', {
       event
     },
     connectSocket(token: string) {
-      this.socket = new WebSocket(echoSocketUrl, ['access_token', token])
+      try {
+        this.socket.close()
+      } catch (err) {
+        // test
+      }
+      if (!token) {
+        console.warn("No login credentials. Cannot establish websocket connection.")
+        return
+      }
+      this.$state.socket = new WebSocket(echoSocketUrl, ['access_token', token])
 
       this.socket.onopen = (event) => this.socketOnOpenCallback(event)
       this.socket.onmessage = (event) => this.socketOnMessageCallback(event)

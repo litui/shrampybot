@@ -6,8 +6,8 @@ export const useAuthStore = defineStore('auth', {
   state: () => {
     const accessToken = useLocalStorage('accessToken', '')
     const refreshToken = useLocalStorage('refreshToken', '')
-
-    return { accessToken, refreshToken }
+    const userServicesStatus = useLocalStorage('uss', {} as Record<string, any>)
+    return { accessToken, refreshToken, userServicesStatus }
   },
   actions: {
     getAxiosConfig() {

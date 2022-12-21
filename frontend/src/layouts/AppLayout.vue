@@ -25,7 +25,6 @@
 <script setup lang="ts">
   import { computed, onBeforeMount, onBeforeUnmount, onMounted, watchEffect, ref } from 'vue'
   import { useRouter, onBeforeRouteUpdate } from 'vue-router'
-  import { validateAndFetchRoute } from '../router/index'
   import { storeToRefs } from 'pinia'
 
   import { useGlobalStore } from '../stores/global-store'
@@ -37,7 +36,6 @@
   /* Set default colour scheme to dark */
   import { useColors } from 'vuestic-ui'
   import { useAuthStore } from '../stores/auth'
-  import { useUserStore } from '../stores/user'
   import { useWSStore } from '../stores/ws'
 
   const { applyPreset, setColors } = useColors()
@@ -55,7 +53,6 @@
 
   const GlobalStore = useGlobalStore()
   const AuthStore = useAuthStore()
-  const UserStore = useUserStore()
   const WSStore = useWSStore()
 
   const mobileBreakPointPX = 640
@@ -65,15 +62,16 @@
   const sidebarMinimizedWidth = ref('')
 
   const time = Date.now()
-  const timer = useTimer(time + 1000)
+  const timer = useTimer(time + 60000)
   const heartbeatTimerRestart = async () => {
     // Monitor the current state of the websocket connection and refresh if it needs it
-    if (WSStore.$state.connected !== true) {
-      await AuthStore.testAndRefreshToken()
-      WSStore.connectSocket(AuthStore.$state.accessToken)
+    await AuthStore.testAndRefreshToken()
+
+    if (WSStore.connected !== true) {
+      WSStore.connectSocket(AuthStore.accessToken)
     }
     const time = Date.now()
-    timer.restart(time + 1000)
+    timer.restart(time + 60000)
   }
 
   const isMobile = ref(false)
@@ -94,15 +92,15 @@
   onMounted(async () => {
     watchEffect(async () => {
       if (timer.isExpired.value) {
-        heartbeatTimerRestart()
+        await heartbeatTimerRestart()
       }
     })
 
     window.addEventListener('resize', onResize)
   })
 
-  onBeforeMount(() => {
-    heartbeatTimerRestart()
+  onBeforeMount(async () => {
+    await heartbeatTimerRestart()
   })
 
   onBeforeUnmount(() => {

@@ -1,5 +1,6 @@
 import asyncio
 import threading
+from channels.db import database_sync_to_async
 from functools import cached_property
 from django.apps import AppConfig
 from twitchAPI import twitch, eventsub
@@ -63,16 +64,25 @@ class TwitchAppConfig(AppConfig):
 
         twitch_service = Service.objects.get(name='twitch')
 
-        return self.arun(self._get_api(
+        return self.arun(self.async_get_api(
             twitch_service.api_client_id,
             twitch_service.api_secret_key
         ))
 
-    async def _get_api(self, client_id, secret_key):
+    @database_sync_to_async
+    def _refresh_app_token_cb(self, access_token):
+        from service.models import Service
+
+        twitch_service: Service = Service.object.get(name="twitch")
+        twitch_service.api_token = access_token
+        twitch_service.save()
+
+    async def async_get_api(self, client_id, secret_key):
         t = await twitch.Twitch(
             app_id=client_id,
             app_secret=secret_key
         )
+        t.app_auth_refresh_callback = self._refresh_app_token_cb
         return t
 
     @cached_property
@@ -84,7 +94,7 @@ class TwitchAppConfig(AppConfig):
         # before the self.arun is called.
         self.api
 
-        eh = self.arun(self._get_eventsub(
+        eh = self.arun(self.async_get_eventsub(
             twitch_service.webhooks_inbound_endpoint,
             twitch_service.api_client_id,
             self.api
@@ -94,14 +104,17 @@ class TwitchAppConfig(AppConfig):
         eh.wait_for_subscription_confirm = False
         return eh
 
-    async def _get_eventsub(self, cb_url, client_id, twitch_api):
-        e = await eventsub.EventSub(
+    async def async_get_eventsub(self, cb_url, client_id, twitch_api):
+        eh = await eventsub.EventSub(
             callback_url=cb_url,
             api_client_id=client_id,
             port=443,
             twitch=twitch_api
         )
-        return e
+        eh.secret = twitch_api.webhooks_shared_secret
+        eh.unsubscribe_on_stop = False
+        eh.wait_for_subscription_confirm = False
+        return eh
 
     def arun(self, coroutine):
         """Runner of async coroutines returning results in sync"""

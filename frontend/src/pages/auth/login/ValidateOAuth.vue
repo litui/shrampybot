@@ -109,7 +109,7 @@
     }
 
     show_error_modal.value = false
-    router.push({ name: 'login' })
+    router.replace({ name: 'login' })
   }
 
   // const jwt_authenticate = async (user: string, password: string) => {

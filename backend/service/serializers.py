@@ -1,4 +1,4 @@
-from .models import Service
+from .models import Service, UserService
 from rest_framework import serializers
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -6,7 +6,12 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = ['name']
 
-    name = serializers.CharField()
+class UserServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserService
+        fields = ['identity', 'service', 'user', 'scope', 'last_verified']
+
+    service = ServiceSerializer(read_only=True, many=False)
 
 class OAuthServiceSerializer(serializers.ModelSerializer):
     class Meta:

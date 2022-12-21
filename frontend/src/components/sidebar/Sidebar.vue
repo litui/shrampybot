@@ -72,5 +72,9 @@
         align-items: center;
       }
     }
+
+    &__title {
+      font-family: 'Revalia';
+    }
   }
 </style>

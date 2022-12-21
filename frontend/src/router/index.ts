@@ -89,6 +89,46 @@ export const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    name: 'self',
+    path: '/self',
+    meta: {
+      nav: {
+        icon: 'vuestic-iconset-dashboard',
+        displayName: 'menu.selfservice',
+        disabled: false,
+        hidden: false,
+      },
+      perms: {
+        requiresAuth: true,
+        requiresStaff: false,
+        requiresAdmin: false,
+      },
+    },
+    redirect: { name: 'dashboard' },
+    component: AppLayout,
+    children: [
+      {
+        name: 'profile',
+        path: '/self/profile',
+        meta: {
+          nav: {
+            icon: 'vuestic-iconset-dashboard',
+            displayName: 'menu.profile',
+            disabled: false,
+            hidden: false,
+          },
+          perms: {
+            requiresAuth: true,
+            requiresStaff: false,
+            requiresAdmin: false,
+          },
+        },
+        component: () => import('../pages/gsg/self-service/Profile.vue'),
+      },
+      // UIRoute,
+    ],
+  },
+  {
     name: 'staff',
     path: '/staff',
     meta: {
@@ -340,16 +380,17 @@ router.beforeEach(async (to: any, from: any, next) => {
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  if (UserStore.$state.self.isLoggedIn === true) {
+  if (AuthStore.accessToken !== '' && UserStore.self.isLoggedIn === true) {
     next()
     return
   }
 
   // instead of having to check every route record with
   // to.matched.some(record => record.meta.requiresAuth)
-  if (to.meta.requiresAuth) {
-    if (AuthStore.$state.accessToken !== '') {
-      next(await validateAndFetchRoute(to))
+  if (to.meta.perms.requiresAuth) {
+    if (AuthStore.accessToken !== '') {
+      next()
+      // next(await validateAndFetchRoute(to))
     } else {
       next('/auth/login_oauth')
     }
@@ -372,7 +413,7 @@ export const validateAndFetchRoute = async (route_path: any) => {
     const bearerResponse = await axios.get(path, axiosConfig)
     UserStore.$state.self = bearerResponse.data.self
   } catch (error: any) {
-    if (error.response.status == 401) {
+    if (error.response.status in [400, 401]) {
       const refresh_token = AuthStore.$state.refreshToken
       const refresh_path = '/token/refresh/'
 

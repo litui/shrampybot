@@ -348,7 +348,10 @@
     "404-pages": "404 Pages",
     "faq": "Faq",
     "overlays": "Overlays",
-    "wombragen": "Wombragen"
+    "wombragen": "Wombragen",
+    "selfservice": "Self-Service",
+    "integrations": "Integrations",
+    "profile": "Profile"
   },
   "messages": {
     "all": "See all messages",
@@ -509,7 +512,15 @@
   "user": {
     "language": "Change Language",
     "logout": "Logout",
-    "profile": "My Profile"
+    "profile": "My Profile",
+    "linkedAccount": "Linked Account",
+    "scopes": "Scopes",
+    "linked": "Linked",
+    "notLinked": "Not Linked",
+    "primaryLink": "Primary Link"
+  },
+  "scopes": {
+    "basicAuth": "Authentication"
   },
   "treeView": {
     "basic": "Basic",

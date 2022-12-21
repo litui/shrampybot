@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
   import { ref, onMounted, watchEffect } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { validateAndFetchRoute } from '../../router'
 
@@ -26,6 +27,8 @@
   import { useAuthStore } from '../../stores/auth'
   import axios from 'axios'
   import moment, { Moment } from 'moment'
+
+  const t = useI18n()
 
   const AuthStore = useAuthStore()
   const router = useRouter()
