@@ -4,7 +4,6 @@
 __deployer__.zip
 __pycache__/
 node_modules
-package-lock.json
 .DS_Store
 project.yml
 shrampy-prod
