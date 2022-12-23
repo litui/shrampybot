@@ -3,6 +3,11 @@
 
 name: Node.js CI
 
+defaults:
+  run:
+    shell: bash
+    working-directory: frontend
+
 on:
   push:
     branches: [ "main" ]
@@ -26,4 +31,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd frontend && npm run build:ci
+    - run: npm run build:ci
