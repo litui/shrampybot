@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.dockerignore
+.gitattributes
+.gitignore
+.env
+Dockerfile
+README.md
