@@ -2,7 +2,8 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+os.chdir('code')
+sys.path.insert(0, os.getcwd())
 
 def main():
     """Run administrative tasks."""

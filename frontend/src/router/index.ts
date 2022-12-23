@@ -32,7 +32,7 @@ export interface INavigationRoute {
 
 export const routes: Array<RouteRecordRaw> = [
   {
-    path: '/:catchAll(.*)',
+    path: '/',
     redirect: { name: 'dashboard' },
     meta: {
       nav: {
@@ -109,7 +109,7 @@ export const routes: Array<RouteRecordRaw> = [
     children: [
       {
         name: 'profile',
-        path: '/self/profile',
+        path: '/self/profile/:service?',
         meta: {
           nav: {
             icon: 'vuestic-iconset-dashboard',

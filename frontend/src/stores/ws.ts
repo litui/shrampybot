@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useUserStore } from './user'
 import { useAuthStore } from './auth'
 import { useLocalStorage } from '@vueuse/core'
+import { isProxy } from 'vue'
 
 interface WSStoreRecord {
   socket: WebSocket
@@ -16,9 +17,8 @@ const echoSocketUrl = socketProtocol + '//' + window.location.hostname + ':' + p
 
 export const useWSStore = defineStore('ws', {
   state: () => {
-    const socket = useLocalStorage('ws_socket', {} as typeof WebSocket)
-    const connected = useLocalStorage('connected', false)
-
+    const socket = {} as typeof WebSocket
+    const connected = false
     return {
       socket: socket as any,
       connected: connected as any,
@@ -48,6 +48,7 @@ export const useWSStore = defineStore('ws', {
       if (this.socket.readyState !== this.socket.OPEN || this.connected === false) {
         try {
           await this.waitForOpenConnection()
+          console.log(this.socket)
           this.socket.send(JSON.stringify(jsonData))
         } catch (err) {
           console.error(err)
@@ -97,7 +98,7 @@ export const useWSStore = defineStore('ws', {
         console.warn("No login credentials. Cannot establish websocket connection.")
         return
       }
-      this.$state.socket = new WebSocket(echoSocketUrl, ['access_token', token])
+      this.socket = new WebSocket(echoSocketUrl, ['jwt_bearer', token])
 
       this.socket.onopen = (event) => this.socketOnOpenCallback(event)
       this.socket.onmessage = (event) => this.socketOnMessageCallback(event)

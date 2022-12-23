@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
   import { computed, onBeforeMount, onBeforeUnmount, onMounted, watchEffect, ref } from 'vue'
-  import { useRouter, onBeforeRouteUpdate } from 'vue-router'
+  import { onBeforeRouteUpdate } from 'vue-router'
   import { storeToRefs } from 'pinia'
 
   import { useGlobalStore } from '../stores/global-store'
@@ -39,8 +39,6 @@
   import { useWSStore } from '../stores/ws'
 
   const { applyPreset, setColors } = useColors()
-
-  const router = useRouter()
 
   watchEffect(() => {
     applyPreset('dark')
@@ -101,6 +99,7 @@
 
   onBeforeMount(async () => {
     await heartbeatTimerRestart()
+    // WSStore.connectSocket(AuthStore.accessToken)
   })
 
   onBeforeUnmount(() => {

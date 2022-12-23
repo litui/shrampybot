@@ -50,22 +50,22 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'daphne',
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'encrypted_model_fields',
     'channels',
     'rest_framework',
-    'encrypted_model_fields',
     'discordapp',
-    'gsheets',
+    # 'gsheets',
     'mastodonapp',
+    'twitchapp',
     "service",
     'streamer',
     'stream',
-    'twitchapp'
 ]
 
 MIDDLEWARE = [

@@ -16,10 +16,16 @@ class JWTAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive: Queue.get, send: Server.handle_reply):
         token_parts = scope['subprotocols']
-        try:
-            token = AccessToken(token_parts[1])
-            user_id = token.get('user_id', None)
-        except (IndexError, TokenError):
+        protocol = token_parts[0]
+        
+        if protocol == 'jwt_bearer':    
+            try:
+                token = AccessToken(token_parts[1])
+                user_id = token.get('user_id', None)
+            except (IndexError, TokenError):
+                token = None
+                user_id = None
+        else:
             token = None
             user_id = None
 

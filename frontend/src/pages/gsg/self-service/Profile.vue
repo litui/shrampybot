@@ -1,4 +1,4 @@
-<template>
+<template service="">
   <va-card color="background-element" style="padding: 0.75rem">
     <div class="row">
       <div v-for="i in integrationData" :key="i.identity" class="flex lg4">

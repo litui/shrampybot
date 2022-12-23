@@ -514,6 +514,7 @@
     "logout": "Logout",
     "profile": "My Profile",
     "linkedAccount": "Linked Account",
+    "linkAccount": "Link Account",
     "scopes": "Scopes",
     "linked": "Linked",
     "notLinked": "Not Linked",
