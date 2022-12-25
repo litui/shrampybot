@@ -27,9 +27,7 @@ class Streamer(models.Model):
 
 class StreamerAct(mixins.SheetSyncableMixin, models.Model):
     from twitchapp.models import TwitchAccount
-    from shrampybot.settings import GOOGLE_STREAMER_SHEET
 
-    spreadsheet_id = GOOGLE_STREAMER_SHEET
     model_id_field = 'guid'
     sheet_name = 'MasterStreamerList'
 

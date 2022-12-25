@@ -13,4 +13,6 @@ virtualenv
 *.sqlite3
 *.env
 log
-docker-compose.yml
+data/**
+*.crt
+*.pem

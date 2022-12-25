@@ -41,7 +41,7 @@
       user.value = state.self.username
     }
   })
- 
+
   // const isTopBarProxy = computed({
   //   get() {
   //     return props.isTopBar

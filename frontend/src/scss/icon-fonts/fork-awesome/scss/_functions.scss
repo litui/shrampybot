@@ -7,5 +7,5 @@
 // See: https://stackoverflow.com/questions/30421570/sass-unicode-escape-is-not-preserved-in-css-file
 
 @function fa-content($fa-var) {
-  @return unquote("\"#{$fa-var}\"");
+  @return unquote('"#{$fa-var}"');
 }

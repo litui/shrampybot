@@ -1,5 +1,5 @@
 <template>
-  <div class="color-dropdown" v-if="connected">
+  <div v-if="connected" class="color-dropdown">
     <va-icon name="material-icons-link" color="#00FF00" stick-to-edges size="large"></va-icon>
   </div>
   <div v-else>

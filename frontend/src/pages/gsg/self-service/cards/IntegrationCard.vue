@@ -20,12 +20,7 @@
     <va-card-content>
       <div v-if="oauth_service.linked === true" class="row">
         <div class="flex xs12">
-          <va-input
-            v-model="oauth_service.identity"
-            :label="t('user.linkedAccount')"
-            placeholder="none"
-            readonly
-          />
+          <va-input v-model="oauth_service.identity" :label="t('user.linkedAccount')" placeholder="none" readonly />
         </div>
         <div class="flex d-flex flex-direction-column">
           <h5 class="mb-2">{{ t('user.scopes') }}</h5>
@@ -52,10 +47,7 @@
     <va-card-actions>
       <div class="row">
         <div class="flex lg12 xs12">
-          <va-button 
-            v-if="'linked' in oauth_service && !oauth_service.linked"
-            :href="oauth_uri"
-          >
+          <va-button v-if="'linked' in oauth_service && !oauth_service.linked" :href="oauth_uri">
             {{ t('user.linkAccount') }}
           </va-button>
           <va-progress-bar

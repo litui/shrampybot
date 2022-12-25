@@ -2,3 +2,4 @@
 Dockerfile
 __pycache__
 code
+*.md

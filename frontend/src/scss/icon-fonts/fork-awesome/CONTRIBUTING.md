@@ -8,13 +8,13 @@ New icons mostly start as requests by the [Fork Awesome community on GitHub](../
 
 1. Please be nice. Fork Awesome is a happy place.
 2. Please [search](../../search?type=Issues) to see if your icon request already exists. If a request is found, please add a 👍 reaction to that one.
-4. Please make requests for single icons, unless you are requesting a couple of strictly related icons (e.g., thumbs-up/thumbs-down).
-5. Please and thank you if you include the following:
-  - Title your [new issue](../../issues/new?title=Icon%20Request:%20icon-) `Icon request: icon-name` (e.g., `Icon request: icon-car`).
-  - Include a few use cases for your requested icon. How do you plan on using it?
-  - Attach or link to a single color image or two that represent the idea you're going for.
-  - Request concrete objects: it's harder to make an icon to represent happiness, it's easier to make a smiley face. ☺
+3. Please make requests for single icons, unless you are requesting a couple of strictly related icons (e.g., thumbs-up/thumbs-down).
+4. Please and thank you if you include the following:
 
+- Title your [new issue](../../issues/new?title=Icon%20Request:%20icon-) `Icon request: icon-name` (e.g., `Icon request: icon-car`).
+- Include a few use cases for your requested icon. How do you plan on using it?
+- Attach or link to a single color image or two that represent the idea you're going for.
+- Request concrete objects: it's harder to make an icon to represent happiness, it's easier to make a smiley face. ☺
 
 ## Adding a new icon
 
@@ -42,11 +42,10 @@ Icon filters are maintained by the [Fork Awesome community on GitHub](../../pull
 
 If you feel that an icon
 
-* is missing keyword(s)
-* contains invalid keyword(s)
+- is missing keyword(s)
+- contains invalid keyword(s)
 
 please send a [PR](https://help.github.com/articles/using-pull-requests/) to the `master` branch.
-
 
 ## Reporting issues
 
@@ -57,7 +56,6 @@ We only accept issues that are icon requests, bug reports, or feature requests. 
 3. **Include a live example.** Make use of jsFiddle, jsBin, or Codepen to share your isolated test cases.
 4. **Share as much information as possible.** Include operating system and version, browser and version, version of Fork Awesome, etc. where appropriate. Also include steps to reproduce the bug.
 
-
 ## Key branches
 
 - `master` is the latest, deployed version
@@ -66,10 +64,10 @@ We only accept issues that are icon requests, bug reports, or feature requests. 
 ## Notes on the repo
 
 Fork Awesome's CSS, LESS, SCSS, and documentation are all powered by Jekyll templates and built before each commit and release.
+
 - `_config.yml` - much of the site is driven off variables from this file, including Font Awesome and Bootstrap versions
 - `src/doc/` - All edits to documentation, LESS, SCSS, and CSS should be made to files and templates in this directory
 - `src/icons/icons.yml` - all LESS, SCSS, and CSS icon definitions are driven off this single file
-
 
 ## Pull requests
 
@@ -78,14 +76,12 @@ Fork Awesome's CSS, LESS, SCSS, and documentation are all powered by Jekyll temp
 - If modifying the .less and .scss files, always recompile and commit the compiled files
 - Try to share which browsers your code has been tested in before submitting a pull request
 
-
 ## Coding standards: HTML
 
 - Two spaces for indentation, never tabs
 - Double quotes only, never single quotes
 - Always use proper indentation
 - Use tags and elements appropriate for an HTML5 doctype (e.g., self-closing tags)
-
 
 ## Coding standards: CSS
 
@@ -96,12 +92,11 @@ Fork Awesome's CSS, LESS, SCSS, and documentation are all powered by Jekyll temp
 - For multiple, comma-separated selectors, place each selector on its own line
 - Attribute selectors, like `input[type="text"]` should always wrap the attribute's value in double quotes, for consistency and safety (see this [blog post on unquoted attribute values](http://mathiasbynens.be/notes/unquoted-attribute-values) that can lead to XSS attacks)
 
-
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the MIT License:
-- http://opensource.org/licenses/mit-license.html
 
+- http://opensource.org/licenses/mit-license.html
 
 ## Thanks
 

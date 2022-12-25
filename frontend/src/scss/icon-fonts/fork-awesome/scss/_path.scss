@@ -9,7 +9,7 @@
     url('#{$fa-font-path}/forkawesome-webfont.woff?v=#{$fa-version}') format('woff'),
     url('#{$fa-font-path}/forkawesome-webfont.ttf?v=#{$fa-version}') format('truetype'),
     url('#{$fa-font-path}/forkawesome-webfont.svg?v=#{$fa-version}#forkawesomeregular') format('svg');
-//  src: url('#{$fa-font-path}/ForkAwesome.otf') format('opentype'); // used when developing fonts
+  //  src: url('#{$fa-font-path}/ForkAwesome.otf') format('opentype'); // used when developing fonts
   font-weight: normal;
   font-style: normal;
   font-display: block;

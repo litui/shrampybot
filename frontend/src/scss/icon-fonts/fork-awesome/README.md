@@ -1,4 +1,5 @@
 # Fork Awesome
+
 ### A fork of the iconic font and CSS toolkit
 
 [![npm-badge]][npm-link] [![all-contrib]](CONTRIBUTORS.md) [![jsdeliver-badge]][jsdeliver-link] [![cdnjs-badge]][cdnjs-link] [![build-status-badge]][build-status-link] [![matrix-badge]][matrix-link]
@@ -12,9 +13,11 @@ With gratitude to Dave Gandy and the Font Awesome team, [Julien](https://github.
 We are now catching up with backlogged issues and pull requests, updating technology and documentation — even reevaluating the project aims, as icon fonts gradually [become](https://www.irigoyen.dev/blog/2021/02/17/stop-using-icon-fonts/) [deprecated](https://cloudfour.com/thinks/seriously-dont-use-icon-fonts/). Come say hi in the [#forkawesome:matrix.org](https://matrix.to/#/#forkawesome:matrix.org) matrix room 🙂
 
 ## How to use
+
 There is a full page in our documentation website that explains [how to use Fork Awesome in your web project](https://forkaweso.me/Fork-Awesome/get-started/). It ranges from just pointing to a CSS file on a CDN, hosting it on your own server or even adapting the LESS and SCSS files to your own liking.
 
 ## License
+
 - The Fork Awesome font is licensed under the SIL OFL 1.1:
   - http://scripts.sil.org/OFL
 - Fork Awesome CSS, LESS, and Sass files are licensed under the MIT License:
@@ -38,15 +41,16 @@ with the following format:
 
 And constructed with the following guidelines:
 
-* Breaking backward compatibility bumps the major (and resets the minor and patch)
-* Big changes, without breaking backward compatibility, bumps the minor (and resets the patch)
-* Bug fixes, small adaptations, adding a few icons and misc changes bumps the patch
-* The fork started from FontAwesome 4.7 (last commit by Dave is [bdfa9823](https://github.com/ForkAwesome/Fork-Awesome/commits/master?after=b0bc8f6fb74e05c987ef7ce1525cd3ab8390a1c3+69)).
-* The project starts at version 1.0.0. All references to versions before the fork are named 0.4.7
+- Breaking backward compatibility bumps the major (and resets the minor and patch)
+- Big changes, without breaking backward compatibility, bumps the minor (and resets the patch)
+- Bug fixes, small adaptations, adding a few icons and misc changes bumps the patch
+- The fork started from FontAwesome 4.7 (last commit by Dave is [bdfa9823](https://github.com/ForkAwesome/Fork-Awesome/commits/master?after=b0bc8f6fb74e05c987ef7ce1525cd3ab8390a1c3+69)).
+- The project starts at version 1.0.0. All references to versions before the fork are named 0.4.7
 
 For more information on SemVer, please visit http://semver.org.
 
 ## Component
+
 To include as a [component](https://github.com/componentjs/component), just run
 
     $ component install ForkAwesome/Fork-Awesome
@@ -63,7 +67,7 @@ to the `dependencies` in your `component.json`.
 
 - [Ruby](https://www.ruby-lang.org/en/)
 - Ruby Development Headers
-  - **Ubuntu:** `sudo apt-get install ruby-dev` *(Only if you're __NOT__ using `rbenv` or `rvm`)*
+  - **Ubuntu:** `sudo apt-get install ruby-dev` _(Only if you're **NOT** using `rbenv` or `rvm`)_
   - **Windows:** [DevKit](http://rubyinstaller.org/)
   - **macOS:** no extra step required
 - [Bundler](http://bundler.io/) (Run `gem install bundler` to install).
@@ -111,14 +115,15 @@ Within the container, build the font:
     $ make -C src/icons
 
 <!--- reference links for badges -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-128-orange.svg "All Contributors badge"
-[build-status-badge]: https://travis-ci.org/ForkAwesome/Fork-Awesome.svg?branch=master "Build status badge"
+
+[all-contrib]: https://img.shields.io/badge/all_contributors-128-orange.svg 'All Contributors badge'
+[build-status-badge]: https://travis-ci.org/ForkAwesome/Fork-Awesome.svg?branch=master 'Build status badge'
 [build-status-link]: https://travis-ci.org/ForkAwesome/Fork-Awesome
-[cdnjs-badge]: https://img.shields.io/cdnjs/v/fork-awesome.svg "CDNJS badge"
+[cdnjs-badge]: https://img.shields.io/cdnjs/v/fork-awesome.svg 'CDNJS badge'
 [cdnjs-link]: https://cdnjs.com/libraries/fork-awesome
-[jsdeliver-badge]: https://img.shields.io/jsdelivr/npm/hm/fork-awesome "JSDeliver badge"
+[jsdeliver-badge]: https://img.shields.io/jsdelivr/npm/hm/fork-awesome 'JSDeliver badge'
 [jsdeliver-link]: https://www.jsdelivr.com/package/npm/fork-awesome
-[npm-badge]: https://img.shields.io/npm/v/fork-awesome.svg?colorB=CB3837 "NPM badge"
+[npm-badge]: https://img.shields.io/npm/v/fork-awesome.svg?colorB=CB3837 'NPM badge'
 [npm-link]: https://www.npmjs.com/package/fork-awesome
-[matrix-badge]: https://img.shields.io/matrix/forkawesome:matrix.org?label=%23forkawesome%3Amatrix.org "chat (matrix) badge"
+[matrix-badge]: https://img.shields.io/matrix/forkawesome:matrix.org?label=%23forkawesome%3Amatrix.org 'chat (matrix) badge'
 [matrix-link]: https://matrix.to/#/#forkawesome:matrix.org

@@ -7,9 +7,7 @@
   "dependencies": {},
   "development": {},
   "license": "SIL, MIT, CC BY 3.0",
-  "styles": [
-    "css/fork-awesome.css"
-  ],
+  "styles": ["css/fork-awesome.css"],
   "fonts": [
     "fonts/forkawesome-webfont.eot",
     "fonts/forkawesome-webfont.svg",

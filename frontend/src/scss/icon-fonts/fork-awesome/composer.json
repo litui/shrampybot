@@ -1,7 +1,14 @@
 {
   "name": "forkawesome/fork-awesome",
   "description": "A fork of the iconic font and CSS framework",
-  "keywords": ["font", "awesome", "fontawesome", "forkawesome", "icon",  "bootstrap"],
+  "keywords": [
+    "font",
+    "awesome",
+    "fontawesome",
+    "forkawesome",
+    "icon",
+    "bootstrap"
+  ],
   "homepage": "https://forkaweso.me",
   "type": "component",
   "authors": [
@@ -14,7 +21,7 @@
     "issues": "https://github.com/ForkAwesome/Fork-Awesome/issues"
   },
   "license": [
-      "OFL-1.1",
-      "MIT"
+    "OFL-1.1",
+    "MIT"
   ]
 }
