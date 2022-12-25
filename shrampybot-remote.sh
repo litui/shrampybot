@@ -6,8 +6,8 @@
 rsync_target=$(echo $DOCKER_HOST | sed -e 's/ssh:\/\/\([A-Za-z0-9\@\:\.]*\).*/\1/')
 this_path=$(pwd)
 
-rsync -Rrpv backend/code "${rsync_target}:${this_path}"
-rsync -Rrpv frontend/src "${rsync_target}:${this_path}"
-rsync -Rrpv webserver/ssl "${rsync_target}:${this_path}"
-rsync -Rrpv etc "${rsync_target}:${this_path}"
+rsync -uRrpv backend/code "${rsync_target}:${this_path}"
+rsync -uRrpv frontend/src "${rsync_target}:${this_path}"
+rsync -uRrpv webserver/ssl "${rsync_target}:${this_path}"
+rsync -uRrpv etc "${rsync_target}:${this_path}"
 

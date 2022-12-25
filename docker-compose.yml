@@ -58,7 +58,7 @@ services:
       - |
         if [[ $${SB_ENV} == 'development' ]]; then
           envsubst '$$FRONTEND_HOSTNAME,$$FRONTEND_PORT' < /gsg/frontend/.env.template > /gsg/frontend/.env
-          npm run dev -- --host 0.0.0.0 --port 8280
+          npm run dev -- --host 0.0.0.0 --port ${NGINX_PORT}
         else
           npm run build
         fi
@@ -82,7 +82,7 @@ services:
       - -c
       - |
         sleep 5
-        envsubst '$$SB_ENV,$$NGINX_HOSTNAME,$$NGINX_SSL_CERTFILE,$$NGINX_SSL_KEYFILE' < /tmp/nginx.conf.template > /etc/nginx/conf.d/default.conf
+        envsubst '$$SB_ENV,$$NGINX_HOSTNAME,$$NGINX_PORT,$$NGINX_SSL_CERTFILE,$$NGINX_SSL_KEYFILE' < /tmp/nginx.conf.template > /etc/nginx/conf.d/default.conf
         nginx -g 'daemon off;'
     volumes:
       - ./log/nginx:/var/log/nginx

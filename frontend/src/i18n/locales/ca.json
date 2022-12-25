@@ -1,12 +1,15 @@
 {
   "auth": {
     "agree": "I agree to",
+    "cookieAgreement": "Cookie Agreement",
     "createAccount": "Create account",
     "createNewAccount": "Create New Account",
+    "dataPolicy": "Data Use Policy",
     "email": "Email",
     "username": "Username",
     "login": "Login",
-    "login_oauth": "Login with OAuth Provider",
+    "login_oauth": "Authorized Streamers Only",
+    "loginWithTwitch": "Login with Twitch",
     "title_oauth_validating": "Validating OAuth access code...",
     "title_oauth_generating": "Generating token and logging in...",
     "title_oauth_error": "Error logging in",

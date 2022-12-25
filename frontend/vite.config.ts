@@ -7,6 +7,7 @@ import VueI18nPlugin from '@intlify/vite-plugin-vue-i18n'
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
+    strictPort: false,
     hmr: {
       host: process.env.VITE_WS_HOSTNAME,
       port: process.env.VITE_WS_PORT,

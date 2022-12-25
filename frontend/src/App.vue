@@ -19,11 +19,9 @@
   div.va-card {
     &__title {
       align-items: top;
-      .title-text {
-        margin-left: 1em;
-        font-family: 'Revalia';
-        font-size: 10pt;
-      }
+      margin-left: 1em;
+      font-family: 'Revalia';
+      font-size: 10pt;
     }
   }
 
