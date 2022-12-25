@@ -14,12 +14,15 @@ import environ
 import os
 from pathlib import Path
 
+# Default to production settings unless otherwise specified
+SB_ENV = os.environ.get('SB_ENV', 'production')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = "/etc/gsg"
 
 # Should resolve to /etc within the container
-environ.Env.read_env(os.path.join(CONFIG_DIR, 'shrampybot.env'))
+environ.Env.read_env(os.path.join(CONFIG_DIR, 'sb-backend_{}.env'.format(SB_ENV)))
 
 # Load environment
 env = environ.Env(
@@ -36,9 +39,6 @@ env = environ.Env(
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
-
-# Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
@@ -171,8 +171,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+STATICFILES_STORAGE = env('STATICFILES_STORAGE')
 
 STATIC_URL = 'apistatic/'
 
@@ -206,14 +206,6 @@ FIELD_ENCRYPTION_KEY = env('FIELD_ENCRYPTION_KEY')
 CSRF_TRUSTED_ORIGINS = [env('BASE_URL')]
 
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
-
-
-# Google Sheets/Drive mixin
-GSHEETS = {
-    'CLIENT_SECRETS': '{}/gsheets.json'.format(CONFIG_DIR)
-}
-
-GOOGLE_STREAMER_SHEET = env('GOOGLE_STREAMER_SHEET')
 
 # Required setup for channels
 ASGI_APPLICATION = "shrampybot.asgi.application"

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Changelog of Fork awesome
+
 - v1.2
   - Added icons: Wire, Tor project, volume mute, ringing bell & outlined ringing bell, HAL, Jupytr, Julia, research gate, Open Collective, ClassicPress, ORCID, funkwhale and 38 more. 🎉
   - Updated Joplin icon.
@@ -50,7 +51,7 @@
   - Adds sourcemap for min version of CSS (jsDelivr requirement)
   - Updates Medium icon to latest branding + adds Medium square icon.
 - v1.0.6
-  - Removes Twitter js tracker in the doc and add Disapora* and Mastodon share button (Distributopia)
+  - Removes Twitter js tracker in the doc and add Disapora\* and Mastodon share button (Distributopia)
   - Adding a few more icons: Shaarli, Key (modern)
 - v1.0.5
   - Solves a bug where CSS, LESS & SCSS folder were not updated
@@ -75,6 +76,7 @@
   - Added FontCustom as a build tool to create the webfonts.
 
 ## Changelog of Font Awesome
+
 - [v4.7.0 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/10012)
 - [v4.6.3 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/9189)
 - [v4.6.2 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/9117)

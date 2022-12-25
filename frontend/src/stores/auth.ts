@@ -60,6 +60,6 @@ export const useAuthStore = defineStore('auth', {
           this.$state.accessToken = ''
         }
       }
-    }
+    },
   },
 })

@@ -4,9 +4,14 @@ LABEL org.opencontainers.image.description="ShrampyBot Backend"
 LABEL org.opencontainers.image.licenses=MIT
 # ENV PYTHONDONTWRITEBYTECODE=1
 # ENV PYTHONUNBUFFERED=1
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 RUN useradd -ms /bin/bash shrampybot
 RUN addgroup shrampybot www-data
+# RUN addgroup shrampybot ssl-cert
+
+COPY ca-certificates/* /usr/local/share/ca-certificates
+RUN update-ca-certificates
 
 WORKDIR /gsg/backend
 RUN chown -R shrampybot:www-data /gsg
@@ -15,7 +20,9 @@ COPY requirements.txt /gsg/backend/
 
 RUN pip install --user -r requirements.txt
 
-COPY code/manage.py /gsg/backend/
+WORKDIR /gsg/backend/code
+
+# COPY manage.py /gsg/backend/
 
 VOLUME [ "/gsg/backend/code" ]
 

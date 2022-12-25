@@ -1,0 +1,62 @@
+server {
+        set $nginx_env ${SB_ENV};
+
+        listen 80;
+        listen 443 ssl http2;
+        server_name ${NGINX_HOSTNAME};
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
+        ssl_prefer_server_ciphers on;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off;
+
+        charset utf-8;
+
+        keepalive_timeout 70;
+        sendfile on;
+        client_max_body_size 80m;
+
+        ssl_certificate /etc/nginx/ssl/${NGINX_SSL_CERTFILE};
+        ssl_certificate_key /etc/nginx/ssl/${NGINX_SSL_KEYFILE};
+
+        gzip on;
+        gzip_vary on;
+        gzip_disable "msie6";
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_buffers 16 8k;
+        gzip_http_version 1.1;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml image/x-icon;
+
+        root /var/www/html;
+
+        location / {
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "Upgrade";
+                proxy_set_header Host $host;
+                proxy_set_header Referer $http_referer;
+                
+                # If in the development environment, use the Vite server
+                if ($nginx_env = development) {
+                        proxy_pass http://sb-frontend:8280;
+                }
+                try_files $uri $uri/ /index.html;
+        }
+
+        location ~ ^/(api|api-admin)/ {
+                proxy_pass http://sb-backend:8180;
+                proxy_set_header Referer $http_referer;
+                proxy_set_header Host $host;
+        }
+
+        location ~ ^/ws/ {
+                proxy_pass http://sb-backend:8180;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "Upgrade";
+                proxy_set_header Host $host;
+                proxy_set_header Referer $http_referer;
+        }
+}

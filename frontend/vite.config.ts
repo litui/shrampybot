@@ -6,6 +6,13 @@ import VueI18nPlugin from '@intlify/vite-plugin-vue-i18n'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    hmr: {
+      host: process.env.VITE_WS_HOSTNAME,
+      port: process.env.VITE_WS_PORT,
+      clientPort: process.env.VITE_WS_PORT,
+    },
+  },
   plugins: [
     vue(),
     VueI18nPlugin({

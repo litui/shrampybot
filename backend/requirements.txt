@@ -11,7 +11,7 @@ channels_redis
 asgi_redis
 websockets
 git+https://github.com/truhlik/django-gsheets/#patch-1
-psycopg2-binary>=2.8
+psycopg2>=2.8
 boto3
 Mastodon.py>=1.7.0
 twitchAPI>=3.2.0.1

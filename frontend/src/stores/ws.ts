@@ -34,7 +34,7 @@ export const useWSStore = defineStore('ws', {
         const interval = setInterval(() => {
           if (currentAttempt > maxNumberOfAttempts - 1) {
             clearInterval(interval)
-            reject(new Error('Maximum number of attempts exceeded.'));
+            reject(new Error('Maximum number of attempts exceeded.'))
           } else if (this.socket.readyState === this.socket.OPEN) {
             clearInterval(interval)
             resolve(null)
@@ -95,7 +95,7 @@ export const useWSStore = defineStore('ws', {
         // test
       }
       if (!token) {
-        console.warn("No login credentials. Cannot establish websocket connection.")
+        console.warn('No login credentials. Cannot establish websocket connection.')
         return
       }
       this.socket = new WebSocket(echoSocketUrl, ['jwt_bearer', token])

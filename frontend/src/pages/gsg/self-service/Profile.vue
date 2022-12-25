@@ -33,6 +33,6 @@
       brandColor: '#5B5AE6',
       primaryLogin: false,
       linked: false,
-    }
+    },
   ])
 </script>
