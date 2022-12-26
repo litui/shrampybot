@@ -60,7 +60,7 @@ jobs:
         fail_on_empty: false
 
     - name: Docker-Compose Remote Deployment
-      uses: litui/github-action-ssh-docker-compose@409e0e65f66abbb94e49c7ff2a4ea0015e1fbc63
+      uses: litui/github-action-ssh-docker-compose@144ce8df29576a8b4b95f8a309dea7132cdc1673
       with:
         ssh_private_key: ${{ secrets.SB_DEPLOYMENT_SECRET_KEY }}
         ssh_host: ${{ secrets.SB_REMOTE_DOCKER_HOST }}
