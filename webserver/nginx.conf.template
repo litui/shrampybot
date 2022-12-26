@@ -37,10 +37,10 @@ server {
                 proxy_set_header Connection "Upgrade";
                 proxy_set_header Host $host;
                 proxy_set_header Referer $http_referer;
-                
+
                 # If in the development environment, use the Vite server
                 if ($nginx_env = development) {
-                        proxy_pass http://sb-frontend:8280;
+                        proxy_pass http://sb-frontend:${NGINX_PORT};
                 }
                 try_files $uri $uri/ /index.html;
         }
