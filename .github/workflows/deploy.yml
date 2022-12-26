@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  deploy-to-production:
+  deploy-to-prod:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment:
