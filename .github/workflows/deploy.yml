@@ -1,11 +1,11 @@
 name: Deploy
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types:
       - closed
+    branches:
+      - main
+  push:
     branches:
       - main
 
