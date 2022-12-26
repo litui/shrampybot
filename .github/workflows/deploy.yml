@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  deploy-to-prod:
+  deploy-to-production:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # runs-on: self-hosted
@@ -20,7 +20,7 @@ jobs:
     
     steps:
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.2.0
 
     - name: Make docker-compose envfile
       uses: SpicyPizza/create-envfile@v1.3
