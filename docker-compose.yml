@@ -76,6 +76,7 @@ services:
       NGINX_HOSTNAME: '${NGINX_HOSTNAME}'
       NGINX_SSL_CERTFILE: '${NGINX_SSL_CERTFILE}'
       NGINX_SSL_KEYFILE: '${NGINX_SSL_KEYFILE}'
+      NGINX_SSL_PATH: '${NGINX_SSL_PATH}'
     container_name: sb-webserver
     command:
       - bash
@@ -86,7 +87,7 @@ services:
         nginx -g 'daemon off;'
     volumes:
       - ./log/nginx:/var/log/nginx
-      - ./webserver/ssl:/etc/nginx/ssl
+      - '${NGINX_SSL_PATH}:/etc/nginx/ssl'
       - ./frontend/dist:/var/www/html
     links:
       - sb-frontend:sb-frontend

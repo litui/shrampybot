@@ -1,0 +1,64 @@
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Make docker-compose envfile
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+        envkey_SB_ENV: '${{ secrets.SB_ENV }}'
+        envkey_DOCKER_CONTAINER_REGISTRY: '${{ secrets.SB_DOCKER_CONTAINER_REGISTRY }}'
+        envkey_POSTGRES_DB: '${{ secrets.SB_POSTGRES_DB }}'
+        envkey_POSTGRES_USER: '${{ secrets.SB_POSTGRES_USER }}'
+        envkey_POSTGRES_PASSWORD:  '${{ secrets.SB_POSTGRES_PASSWORD }}'
+        envkey_BASE_URL: '${{ secrets.SB_BASE_URL }}'
+        envkey_NGINX_HOSTNAME: '${{ secrets.SB_NGINX_HOSTNAME }}'
+        envkey_NGINX_PORT: '${{ secrets.SB_NGINX_PORT }}'
+        envkey_NGINX_SSL_PATH: '${{ secrets.SB_NGINX_SSL_PATH }}'
+        envkey_NGINX_SSL_CERTFILE: fullchain.pem
+        envkey_NGINX_SSL_KEYFILE: privkey.pem
+        # some_other_variable: foobar
+        # directory: <directory_name>
+        file_name: .env
+        fail_on_empty: false
+
+    - name: Make django envfile
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+        envkey_DEBUG: '${{ secrets.SB_DJANGO_DEBUG }}'
+        envkey_SECRET_KEY: '${{ secrets.SB_DJANGO_SECRET_KEY }}'
+        envkey_DATABASE_URL: 'psql://${{ secrets.SB_POSTGRES_USER }}:${{ secrets.SB_POSTGRES_PASSWORD }}@sb-database:5432/${{ secrets.SB_POSTGRES_DB }}'
+        envkey_FIELD_ENCRYPTION_KEY: '${{ secrets.SB_DJANGO_FIELD_ENCRYPTION_KEY }}'
+        envkey_DEFAULT_FILE_STORAGE: 'storages.backends.s3boto3.S3Boto3Storage'
+        envkey_STATICFILES_STORAGE: 'storages.backends.s3boto3.S3StaticStorage'
+        envkey_AWS_S3_ENDPOINT_URL: '${{ secrets.AWS_S3_ENDPOINT_URL }}'
+        envkey_AWS_S3_ACCESS_KEY_ID: '${{ secrets.AWS_S3_ACCESS_KEY_ID }}'
+        envkey_AWS_S3_SECRET_ACCESS_KEY: '${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}'
+        envkey_AWS_STORAGE_BUCKET_NAME: '${{ secrets.AWS_STORAGE_BUCKET_NAME }}'
+        envkey_AWS_S3_REGION_NAME: '${{ secrets.AWS_S3_REGION_NAME }}'
+        envkey_AWS_S3_CUSTOM_DOMAIN: '${{ secrets.AWS_S3_CUSTOM_DOMAIN }}'
+        envkey_AWS_DEFAULT_ACL: 'public-read'
+        envkey_REDIS_CHANNELS: '("sb-cache", 6379)'
+        # some_other_variable: foobar
+        directory: ./etc
+        file_name: sb-backend_${{ secrets.SB_ENV }}.env
+        fail_on_empty: false
+
+    - name: Docker-Compose Remote Deployment
+      uses: matiasnu/github-action-ssh-docker-compose@v2.0.1
+      with:
+        ssh_private_key: ${{ secrets.SB_DEPLOYMENT_SECRET_KEY }}
+        ssh_host: ${{ secrets.SB_REMOTE_DOCKER_HOST }}
+        ssh_port: 22
+        ssh_user: ${{ secrets.SB_REMOTE_DOCKER_USER }}
+        docker_compose_prefix: ${{ secrets.SB_DOCKER_COMPOSE_PREFIX }}
+        docker_compose_filename: docker-compose.yml
+        use_stack: false
+        docker_compose_down: false

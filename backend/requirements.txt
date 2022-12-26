@@ -16,5 +16,6 @@ boto3
 Mastodon.py>=1.7.0
 twitchAPI>=3.2.0.1
 hikari>=2.0.0.dev112
+google-cloud-storage
 markdown
 Pillow
