@@ -1,5 +1,8 @@
 name: Deploy
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types:
       - closed
@@ -10,6 +13,9 @@ jobs:
   deploy-to-environment:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://shrampybot.live
     
     steps:
     - name: Check out code
