@@ -24,7 +24,7 @@
   import { useUserStore } from '../../../stores/user'
   import { useToast } from 'vuestic-ui'
   import axios from 'axios'
-import { VWAP } from '@amcharts/amcharts5/.internal/charts/stock/indicators/VWAP'
+  import { VWAP } from '@amcharts/amcharts5/.internal/charts/stock/indicators/VWAP'
 
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
