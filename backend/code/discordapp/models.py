@@ -1,6 +1,7 @@
 from django.db import models
 from streamer.models import Streamer
 
+
 class DiscordAccount(models.Model):
     discord_id = models.CharField(unique=True, max_length=255, null=False)
     discord_name_in_guild = models.CharField(max_length=255, unique=True, null=False)

@@ -16,6 +16,4 @@ Including another URLconf
 from django.urls import path
 from . import views
 
-urlpatterns = [
-    path('eventsub/', views.TwitchEventSubView.as_view())
-]
+urlpatterns = [path("eventsub/", views.TwitchEventSubView.as_view())]

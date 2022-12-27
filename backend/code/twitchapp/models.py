@@ -4,24 +4,20 @@ from django.dispatch import receiver
 from streamer.models import Streamer
 from uuid import uuid4
 from .apps import TwitchAppConfig
-from twitchAPI.twitch import (
-    TwitchUser as _TwitchUser,
-    Game as _Game,
-    Stream as _Stream
-)
+from twitchAPI.twitch import TwitchUser as _TwitchUser, Game as _Game, Stream as _Stream
 
 
 class TwitchAccount(models.Model):
     class TwitchAccountType(models.TextChoices):
-        USER = '', 'User'
-        STAFF = 'staff', 'Staff'
-        GLOBAL_MOD = 'global_mod', 'Global Mod'
-        ADMIN = 'admin', 'Admin'
+        USER = "", "User"
+        STAFF = "staff", "Staff"
+        GLOBAL_MOD = "global_mod", "Global Mod"
+        ADMIN = "admin", "Admin"
 
     class TwitchBroadcasterType(models.TextChoices):
-        BASIC = '', 'Basic'
-        AFFILIATE = 'affiliate', 'Affiliate'
-        PARTNER = 'partner', 'Partner'
+        BASIC = "", "Basic"
+        AFFILIATE = "affiliate", "Affiliate"
+        PARTNER = "partner", "Partner"
 
     login = models.CharField(max_length=255, unique=True, null=False)
     display_name = models.CharField(max_length=255, unique=True, null=True)
@@ -31,14 +27,12 @@ class TwitchAccount(models.Model):
     offline_image_url = models.TextField(null=True)
     email = models.EmailField(null=True)
     account_type = models.CharField(
-        max_length=20,
-        choices=TwitchAccountType.choices,
-        default=TwitchAccountType.USER
+        max_length=20, choices=TwitchAccountType.choices, default=TwitchAccountType.USER
     )
     broadcaster_type = models.CharField(
         max_length=20,
         choices=TwitchBroadcasterType.choices,
-        default=TwitchBroadcasterType.BASIC
+        default=TwitchBroadcasterType.BASIC,
     )
     deleted = models.BooleanField(null=False, default=False)
     twitch_created_at = models.DateTimeField(null=True)
@@ -57,6 +51,7 @@ class TwitchAccount(models.Model):
         self.profile_image_url = user.profile_image_url
         self.offline_image_url = user.offline_image_url
 
+
 class TwitchCategory(models.Model):
     twitch_id = models.CharField(max_length=40, unique=True, null=True)
     name = models.CharField(max_length=255, unique=True, null=False)
@@ -70,17 +65,18 @@ class TwitchCategory(models.Model):
         self.name = category.name
         self.box_art_url = category.box_art_url
 
+
 class TwitchStream(models.Model):
     twitch_id = models.CharField(max_length=40, unique=True)
     twitch_account = models.ForeignKey(TwitchAccount, on_delete=models.RESTRICT)
     twitch_category = models.ForeignKey(TwitchCategory, on_delete=models.RESTRICT)
-    type = models.CharField(max_length=20, default='live', null=False)
+    type = models.CharField(max_length=20, default="live", null=False)
     title = models.TextField(null=True)
     viewer_count = models.IntegerField(null=False, default=0)
     started_at = models.DateTimeField(null=False, db_index=True)
     language = models.CharField(max_length=20, null=True)
     thumbnail_url = models.CharField(max_length=255, null=True)
-    thumbnail_image = models.ImageField(null=True, upload_to='uploads/%Y/%m/%d/')
+    thumbnail_image = models.ImageField(null=True, upload_to="uploads/%Y/%m/%d/")
     is_mature = models.BooleanField(null=False, default=False)
     is_active = models.BooleanField(null=False, default=True, db_index=True)
     ended_at = models.DateTimeField(null=True, db_index=True)
@@ -105,6 +101,7 @@ class TwitchStream(models.Model):
     def get_related_stream(self):
         from service.models import Service
         from stream.models import Stream
-        service = Service.objects.get(name='twitch')
+
+        service = Service.objects.get(name="twitch")
 
         return Stream.objects.get(platform=service, platform_stream_id=self.twitch_id)

@@ -7,22 +7,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MastodonAccount',
+            name="MastodonAccount",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mastodon_id', models.CharField(max_length=255, unique=True)),
-                ('acct', models.CharField(max_length=255, unique=True)),
-                ('name', models.CharField(max_length=255, null=True)),
-                ('description', models.TextField(null=True)),
-                ('primary_twitch_url', models.CharField(max_length=255, null=True)),
-                ('derived_twitch_id', models.CharField(max_length=255, null=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("mastodon_id", models.CharField(max_length=255, unique=True)),
+                ("acct", models.CharField(max_length=255, unique=True)),
+                ("name", models.CharField(max_length=255, null=True)),
+                ("description", models.TextField(null=True)),
+                ("primary_twitch_url", models.CharField(max_length=255, null=True)),
+                ("derived_twitch_id", models.CharField(max_length=255, null=True)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

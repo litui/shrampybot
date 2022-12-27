@@ -10,8 +10,6 @@ export default defineConfig({
     strictPort: false,
     hmr: {
       host: process.env.VITE_WS_HOSTNAME,
-      port: process.env.VITE_WS_PORT,
-      clientPort: process.env.VITE_WS_PORT,
     },
   },
   plugins: [

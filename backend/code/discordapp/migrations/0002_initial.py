@@ -9,14 +9,16 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('discordapp', '0001_initial'),
-        ('streamer', '0001_initial'),
+        ("discordapp", "0001_initial"),
+        ("streamer", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='discordaccount',
-            name='streamer',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, to='streamer.streamer'),
+            model_name="discordaccount",
+            name="streamer",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.RESTRICT, to="streamer.streamer"
+            ),
         ),
     ]

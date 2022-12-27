@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from encrypted_model_fields.fields import EncryptedTextField
 
+
 class Service(models.Model):
     name = models.CharField(max_length=255, null=False)
     website_url = models.TextField(null=True)
@@ -22,16 +23,17 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserService(models.Model):
     identity = models.CharField(max_length=255, null=True)
     service = models.ForeignKey(Service, on_delete=models.RESTRICT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    scope = models.TextField(null=True, default='read')
+    scope = models.TextField(null=True, default="read")
     user_token = EncryptedTextField(null=False)
     user_refresh_token = EncryptedTextField(null=True)
     webhooks_inbound_endpoint = models.TextField(null=True)
     webhooks_shared_secret = EncryptedTextField(null=True)
-    last_verified = models.DateTimeField(null=True) 
+    last_verified = models.DateTimeField(null=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
 

@@ -16,15 +16,17 @@ import requests
 from datetime import datetime
 from mastodon import Mastodon
 
+
 class ServiceCreateView(generics.CreateAPIView):
-    permission_classes = (IsAdminUser)
-    
+    permission_classes = IsAdminUser
+
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
+
 class ServiceIndividualView(generics.RetrieveAPIView):
-    lookup_field = 'name'
-    lookup_url_kwarg = 'name'
+    lookup_field = "name"
+    lookup_url_kwarg = "name"
     queryset = Service.objects.all()
     serializer_class = OAuthServiceSerializer
 
@@ -34,11 +36,11 @@ class ServiceIndividualView(generics.RetrieveAPIView):
 
     def post(self, request: Request, format=None, name=""):
         # log(INFO, request.query_params)
-        if not request.query_params.get('action') in ['verify_user']:
+        if not request.query_params.get("action") in ["verify_user"]:
             return Response(status=400, exception=True)
 
-        code = request.data['code']
-        referer = request.headers.get('Referer').split('?')[0]
+        code = request.data["code"]
+        referer = request.headers.get("Referer").split("?")[0]
         if not code or not name or not referer:
             return Response(status=400, exception=True)
 
@@ -49,36 +51,41 @@ class ServiceIndividualView(generics.RetrieveAPIView):
             "client_id": s_obj.api_client_id,
             "client_secret": s_obj.api_secret_key,
             "redirect_uri": referer,
-            "scope": s_obj.broad_scope
+            "scope": s_obj.broad_scope,
         }
 
         # Request from OAuth Provider
         oauth_res = requests.post(
             url=s_obj.oauth_endpoint_url,
-            headers={'Content-Type': 'application/json'},
-            json=request_params)
+            headers={"Content-Type": "application/json"},
+            json=request_params,
+        )
         upstream_json = oauth_res.json()
-        
+
         if oauth_res.status_code in [400, 401]:
             return Response(status=oauth_res.status_code, exception=True)
 
-        upstream_token = upstream_json['access_token']
+        upstream_token = upstream_json["access_token"]
         self.twitch_access_token = upstream_token
-        upstream_refresh = upstream_json.get('refresh_token')
+        upstream_refresh = upstream_json.get("refresh_token")
         self.twitch_refresh_token = upstream_refresh
-        upstream_scope = upstream_json['scope'] if upstream_json.get('scope') else ''
+        upstream_scope = upstream_json["scope"] if upstream_json.get("scope") else ""
 
         # Cross-reference twitch ID
         from twitchapp.apps import TwitchAppConfig
         from twitchapp.models import TwitchAccount
 
-        app: TwitchAppConfig = apps.get_app_config('twitchapp')
+        app: TwitchAppConfig = apps.get_app_config("twitchapp")
         api = app.api
 
         # Set callback so we can capture new tokens
         api.user_auth_refresh_callback = self._twitch_refresh_user_token_cb
 
-        app.arun(api.set_user_authentication(upstream_token, upstream_scope, upstream_refresh))
+        app.arun(
+            api.set_user_authentication(
+                upstream_token, upstream_scope, upstream_refresh
+            )
+        )
         t_user = app.aiter(api.get_users())[0]
 
         api_pulled_token = api.get_user_auth_token()
@@ -95,10 +102,7 @@ class ServiceIndividualView(generics.RetrieveAPIView):
         # )
 
         u_obj, user_created = User.objects.update_or_create(
-            defaults={
-                "is_active": True
-            },
-            username=ta.login
+            defaults={"is_active": True}, username=ta.login
         )
         if user_created:
             u_obj.username = ta.login
@@ -112,7 +116,7 @@ class ServiceIndividualView(generics.RetrieveAPIView):
         # Save auth user
         u_obj.save()
 
-        # Connect auth user with Twitch account 
+        # Connect auth user with Twitch account
         if ta.streamer and not ta.streamer.user:
             ta.streamer.user = u_obj
             ta.streamer.save()
@@ -126,10 +130,10 @@ class ServiceIndividualView(generics.RetrieveAPIView):
                 "scope": upstream_scope,
                 "user_token": self.twitch_access_token,
                 "user_refresh_token": self.twitch_refresh_token,
-                "last_verified": datetime.utcnow()
+                "last_verified": datetime.utcnow(),
             },
             service=s_obj,
-            user=u_obj
+            user=u_obj,
         )
         us_obj.save()
 
@@ -141,26 +145,28 @@ class ServiceIndividualView(generics.RetrieveAPIView):
         response = {
             "username": u_obj.username,
             "refresh": str(jwt_refresh),
-            "access": str(jwt_refresh.access_token)
+            "access": str(jwt_refresh.access_token),
         }
 
         return Response(response)
 
 
 class ServiceView(generics.ListAPIView):
-    permission_classes = (IsAdminUser)
+    permission_classes = IsAdminUser
 
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
 
 class ServiceUpdateView(generics.RetrieveUpdateAPIView):
-    permission_classes = (IsAdminUser)
+    permission_classes = IsAdminUser
 
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
+
 class ServiceDeleteView(generics.DestroyAPIView):
-    permission_classes = (IsAdminUser)
+    permission_classes = IsAdminUser
 
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer

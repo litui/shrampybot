@@ -10,25 +10,50 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('streamer', '0002_initial'),
-        ('twitchapp', '0001_initial'),
+        ("streamer", "0002_initial"),
+        ("twitchapp", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Stream',
+            name="Stream",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('guid', models.CharField(default=uuid.uuid4, max_length=255, unique=True)),
-                ('hidden', models.BooleanField(default=False)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('main_streamer', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, to='streamer.streamer')),
-                ('twitch_stream', models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, to='twitchapp.twitchstream')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "guid",
+                    models.CharField(default=uuid.uuid4, max_length=255, unique=True),
+                ),
+                ("hidden", models.BooleanField(default=False)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "main_streamer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        to="streamer.streamer",
+                    ),
+                ),
+                (
+                    "twitch_stream",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        to="twitchapp.twitchstream",
+                    ),
+                ),
             ],
         ),
         migrations.AddConstraint(
-            model_name='stream',
-            constraint=models.UniqueConstraint(fields=('main_streamer', 'twitch_stream_id'), name='unique stream_assoc'),
+            model_name="stream",
+            constraint=models.UniqueConstraint(
+                fields=("main_streamer", "twitch_stream_id"), name="unique stream_assoc"
+            ),
         ),
     ]

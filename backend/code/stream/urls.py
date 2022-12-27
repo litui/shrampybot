@@ -14,14 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from stream.views import (
-    StreamView
-)
+from stream.views import StreamView
 
 urlpatterns = [
     # path('', StreamerView.as_view()),
     # path('create', StreamerCreateView.as_view()),
-    path('', StreamView.as_view()),
+    path("", StreamView.as_view()),
     # path('<int:pk>', StreamerUpdateView.as_view()),
     # path('<int:pk>/delete', StreamerDeleteView.as_view())
 ]

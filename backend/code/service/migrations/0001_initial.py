@@ -16,38 +16,84 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Service',
+            name="Service",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('website_url', models.TextField(null=True)),
-                ('broad_scope', models.TextField(null=True)),
-                ('oauth_login_url', models.TextField(null=True)),
-                ('oauth_endpoint_url', models.TextField(null=True)),
-                ('oauth_revoke_url', models.TextField(null=True)),
-                ('api_client_id', models.TextField(null=True)),
-                ('api_secret_key', encrypted_model_fields.fields.EncryptedTextField(null=True)),
-                ('api_token', encrypted_model_fields.fields.EncryptedTextField(null=True)),
-                ('api_refresh_token', encrypted_model_fields.fields.EncryptedTextField(null=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('streaming_service', models.BooleanField(default=True)),
-                ('webhooks_inbound_endpoint', models.TextField(null=True)),
-                ('webhooks_shared_secret', encrypted_model_fields.fields.EncryptedTextField(null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("website_url", models.TextField(null=True)),
+                ("broad_scope", models.TextField(null=True)),
+                ("oauth_login_url", models.TextField(null=True)),
+                ("oauth_endpoint_url", models.TextField(null=True)),
+                ("oauth_revoke_url", models.TextField(null=True)),
+                ("api_client_id", models.TextField(null=True)),
+                (
+                    "api_secret_key",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
+                (
+                    "api_token",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
+                (
+                    "api_refresh_token",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("streaming_service", models.BooleanField(default=True)),
+                ("webhooks_inbound_endpoint", models.TextField(null=True)),
+                (
+                    "webhooks_shared_secret",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserService',
+            name="UserService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('identity', models.CharField(max_length=255, null=True)),
-                ('scope', models.TextField(default='read', null=True)),
-                ('user_token', encrypted_model_fields.fields.EncryptedTextField()),
-                ('user_refresh_token', encrypted_model_fields.fields.EncryptedTextField(null=True)),
-                ('webhooks_inbound_endpoint', models.TextField(null=True)),
-                ('webhooks_shared_secret', encrypted_model_fields.fields.EncryptedTextField(null=True)),
-                ('service', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, to='service.service')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("identity", models.CharField(max_length=255, null=True)),
+                ("scope", models.TextField(default="read", null=True)),
+                ("user_token", encrypted_model_fields.fields.EncryptedTextField()),
+                (
+                    "user_refresh_token",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
+                ("webhooks_inbound_endpoint", models.TextField(null=True)),
+                (
+                    "webhooks_shared_secret",
+                    encrypted_model_fields.fields.EncryptedTextField(null=True),
+                ),
+                (
+                    "service",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        to="service.service",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

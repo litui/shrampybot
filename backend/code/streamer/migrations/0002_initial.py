@@ -11,19 +11,27 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('twitchapp', '0001_initial'),
-        ('streamer', '0001_initial'),
+        ("twitchapp", "0001_initial"),
+        ("streamer", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='streameract',
-            name='twitch_account',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.RESTRICT, to='twitchapp.twitchaccount'),
+            model_name="streameract",
+            name="twitch_account",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to="twitchapp.twitchaccount",
+            ),
         ),
         migrations.AddField(
-            model_name='streamer',
-            name='user',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.RESTRICT, to=settings.AUTH_USER_MODEL),
+            model_name="streamer",
+            name="user",
+            field=models.OneToOneField(
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]
