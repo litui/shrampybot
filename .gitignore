@@ -17,3 +17,7 @@ data/**
 etc/data/**
 *.crt
 *.pem
+*_production
+*_development
+*_staging
+
