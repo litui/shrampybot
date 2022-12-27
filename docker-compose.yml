@@ -29,7 +29,7 @@ services:
       - bash
       - -c
       - |
-        sleep 5
+        sleep 10
         ./manage.py migrate --no-input
         ./manage.py collectstatic --no-input
         ./manage.py runserver 0.0.0.0:8180
@@ -60,11 +60,11 @@ services:
           envsubst '$$FRONTEND_HOSTNAME,$$FRONTEND_PORT' < /gsg/frontend/.env.template > /gsg/frontend/.env
           npm run dev -- --host 0.0.0.0 --port ${NGINX_PORT}
         else
-          npm run build
+          npm run build:ci
         fi
     volumes:
       - ./frontend/src:/gsg/frontend/src:ro
-      - ./frontend/dist:/gsg/frontend/dist:rw
+      - ./html_${SB_ENV}:/gsg/frontend/dist
 
   sb-webserver:
     image: ${DOCKER_CONTAINER_REGISTRY}litui/shrampybot-webserver
@@ -82,13 +82,13 @@ services:
       - bash
       - -c
       - |
-        sleep 5
+        sleep 10
         envsubst '$$SB_ENV,$$NGINX_HOSTNAME,$$NGINX_PORT,$$NGINX_SSL_CERTFILE,$$NGINX_SSL_KEYFILE' < /tmp/nginx.conf.template > /etc/nginx/conf.d/default.conf
         nginx -g 'daemon off;'
     volumes:
       - ./log/nginx_${SB_ENV}:/var/log/nginx
       - '${NGINX_SSL_PATH}:/etc/nginx/ssl'
-      - ./frontend/dist:/var/www/html
+      - ./html_${SB_ENV}:/var/www/html:ro
     links:
       - sb-frontend:sb-frontend
     depends_on:

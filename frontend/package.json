@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "",
     "dev": "vite",
-    "build": "npm run lint && vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "build:ci": "vite build",
     "prelint": "npm run format",
     "lint": "eslint --fix './src/**/*.{ts,js,vue}'",
