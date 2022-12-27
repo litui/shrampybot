@@ -55,7 +55,7 @@ jobs:
         envkey_AWS_S3_REGION_NAME: '${{ secrets.AWS_S3_REGION_NAME }}'
         envkey_AWS_S3_CUSTOM_DOMAIN: '${{ secrets.AWS_S3_CUSTOM_DOMAIN }}'
         envkey_AWS_DEFAULT_ACL: 'public-read'
-        envkey_REDIS_CHANNELS: '("sb-cache", 6379)'
+        envkey_REDIS_CHANNELS: '(sb-cache, 6379)'
         directory: ./etc
         file_name: sb-backend_${{ secrets.SB_ENV }}.env
         fail_on_empty: false
