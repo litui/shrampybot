@@ -9,7 +9,7 @@ services:
     container_name: sb-database
     volumes:
       - ./data_${SB_ENV}:/var/lib/postgresql/data
-      - ./log/postgresql:/var/log/postgresql
+      - ./log/postgresql_${SB_ENV}:/var/log/postgresql
 
   sb-cache:
     image: redis:7-alpine
@@ -35,7 +35,7 @@ services:
         ./manage.py runserver 0.0.0.0:8180
     volumes:
       - ./etc:/etc/gsg:ro
-      - ./log:/var/log/gsg:rw
+      - ./log/backend_${SB_ENV}:/var/log/gsg:rw
       - ./backend/code:/gsg/backend/code:ro
     depends_on:
       - sb-database
@@ -86,7 +86,7 @@ services:
         envsubst '$$SB_ENV,$$NGINX_HOSTNAME,$$NGINX_PORT,$$NGINX_SSL_CERTFILE,$$NGINX_SSL_KEYFILE' < /tmp/nginx.conf.template > /etc/nginx/conf.d/default.conf
         nginx -g 'daemon off;'
     volumes:
-      - ./log/nginx:/var/log/nginx
+      - ./log/nginx_${SB_ENV}:/var/log/nginx
       - '${NGINX_SSL_PATH}:/etc/nginx/ssl'
       - ./frontend/dist:/var/www/html
     links:
