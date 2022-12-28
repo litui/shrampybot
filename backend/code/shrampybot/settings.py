@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "encrypted_model_fields",
     "channels",
     "rest_framework",
+    "djangochannelsrestframework",
     "discordapp",
     # 'gsheets',
     "mastodonapp",

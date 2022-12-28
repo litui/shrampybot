@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from gsheets import mixins
 from uuid import uuid4
 from shrampybot.helpers import get_twitch_id_from_url
 
@@ -25,7 +24,7 @@ class Streamer(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
 
-class StreamerAct(mixins.SheetSyncableMixin, models.Model):
+class StreamerAct(models.Model):
     from twitchapp.models import TwitchAccount
 
     model_id_field = "guid"
