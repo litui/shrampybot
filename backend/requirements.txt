@@ -11,6 +11,7 @@ djangochannelsrestframework==1.1.0
 channels_redis
 asgi_redis
 websockets
+django-typomatic
 psycopg2>=2.8
 boto3
 Mastodon.py>=1.7.0

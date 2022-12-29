@@ -1,7 +1,9 @@
+from django_typomatic import ts_interface
 from .models import TwitchAccount, TwitchStream
 from rest_framework import serializers
 
 
+@ts_interface()
 class TwitchAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = TwitchAccount
@@ -15,6 +17,7 @@ class TwitchAccountSerializer(serializers.ModelSerializer):
     # modified_date = serializers.DateTimeField()
 
 
+@ts_interface()
 class TwitchStreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = TwitchStream

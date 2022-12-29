@@ -1,9 +1,11 @@
 from .models import Streamer, StreamerAct
+from django_typomatic import ts_interface
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from twitchapp.serializers import TwitchAccountSerializer
+import os, sys
 
-
+@ts_interface()
 class StreamerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Streamer
@@ -25,7 +27,8 @@ class StreamerSerializer(serializers.ModelSerializer):
     # modified_date = serializers.DateTimeField()
 
 
-class SelfStreamerSerializer(serializers.ModelSerializer):
+@ts_interface()
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -33,14 +36,21 @@ class SelfStreamerSerializer(serializers.ModelSerializer):
             "is_authenticated",
             "is_superuser",
             "is_staff",
-            "isLoggedIn",
+            "password",
             "streamer",
         ]
+        extra_kwargs = {"password": {"write_only": True}}
 
     streamer = StreamerSerializer(many=False, read_only=True)
-    isLoggedIn = serializers.BooleanField(read_only=True, default=True)
+
+    def create(self, validated_data):
+        user = User(username=validated_data["username"])
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
 
+@ts_interface()
 class StreamerActSerializer(serializers.ModelSerializer):
     class Meta:
         model = StreamerAct

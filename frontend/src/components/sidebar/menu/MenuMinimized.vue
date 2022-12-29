@@ -14,7 +14,7 @@
           <va-icon
             v-if="route.children"
             class="more_icon"
-            :name="dropdownsValue[idx] ? 'chevron_left' : 'chevron_right'"
+            :name="dropdownsValue[idx] ? 'fa-angle-left' : 'fa-angle-right'"
           />
         </va-sidebar-item-content>
       </va-sidebar-item>

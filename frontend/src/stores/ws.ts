@@ -2,12 +2,7 @@ import { defineStore } from 'pinia'
 import { useUserStore } from './user'
 import { useAuthStore } from './auth'
 import { useLocalStorage } from '@vueuse/core'
-import { isProxy } from 'vue'
-
-interface WSStoreRecord {
-  socket: WebSocket
-  connected: boolean
-}
+import { WSStoreRecord } from '../data/sbTypes'
 
 const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 const port = window.location.port
@@ -21,7 +16,10 @@ export const useWSStore = defineStore('ws', {
     const connected = false
     return {
       socket: socket as any,
-      connected: connected as any,
+      connected: connected as boolean,
+      openRequestIds: [] as Array<number>,
+      unexpectedMessageIds: [] as Array<number>,
+      messageQueue: [] as Array<object>,
     } as WSStoreRecord
   },
   actions: {
@@ -60,26 +58,54 @@ export const useWSStore = defineStore('ws', {
     socketOnOpenCallback(event: Event) {
       console.info('Websocket connected.')
       this.connected = true
+
+      const reqId = new Date().getTime()
+      this.$state.openRequestIds.push(reqId)
+      this.socket.send(
+        JSON.stringify({
+          action: 'retrieve_self',
+          request_id: reqId,
+        }),
+      )
+    },
+    handleResponse(data: any) {
+      // Do nothing here by default - this is for action hooks
+      data
+    },
+    handleUnexpected(data: any) {
+      // Do nothing here by default - this is for action hooks
+      data
+    },
+    setMessageHandled(data: any) {
+      let index = this.unexpectedMessageIds.indexOf(data.request_id)
+      if (index >= 0) {
+        delete this.unexpectedMessageIds[index]
+      }
+
+      index = this.messageQueue.indexOf(data)
+      if (index >= 0) {
+        delete this.messageQueue[index]
+      }
     },
     socketOnMessageCallback(event: MessageEvent) {
       const jsonData = JSON.parse(event.data)
       console.info(jsonData)
-
-      if (jsonData.class === 'sb.users.self') {
-        const UserStore = useUserStore()
-
-        UserStore.setSelf(jsonData.data)
-      } else if (jsonData.class === 'sb.ping') {
-        this.socket.send(
-          JSON.stringify({
-            class: 'vue.pong',
-          }),
-        )
-      } else if (jsonData.class === 'sb.users.services.status') {
-        const AuthStore = useAuthStore()
-
-        AuthStore.userServicesStatus[jsonData.service] = jsonData.data
+      // expected responses
+      if (this.openRequestIds.indexOf(jsonData.request_id) >= 0) {
+        console.debug(`Received inbound message matching Request ID ${jsonData.request_id}`)
+        delete this.openRequestIds[this.openRequestIds.indexOf(jsonData.request_id)]
+        this.handleResponse(jsonData)
+      } else {
+        console.debug(`Received new upstream '${jsonData.action}' with Request ID ${Number(jsonData.request_id)}`)
+        this.unexpectedMessageIds.push(jsonData)
+        this.handleUnexpected(jsonData)
       }
+
+    //   } else if (jsonData.class === 'sb.users.services.status') {
+    //     const AuthStore = useAuthStore()
+
+    //     AuthStore.userServicesStatus[jsonData.service] = jsonData.data
+    //   }
     },
     socketOnCloseCallback(event: CloseEvent) {
       console.warn('Websocket disconnected.')
