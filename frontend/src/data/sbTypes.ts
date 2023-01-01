@@ -1,6 +1,3 @@
-// Model-based types
-import models from '../../model-ts/all.ts'
-
 // Websocket-related types:
 
 export interface WSStoreRecord {

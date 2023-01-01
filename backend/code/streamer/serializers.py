@@ -3,7 +3,7 @@ from django_typomatic import ts_interface
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from twitchapp.serializers import TwitchAccountSerializer
-import os, sys
+
 
 @ts_interface()
 class StreamerSerializer(serializers.ModelSerializer):

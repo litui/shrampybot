@@ -3,6 +3,7 @@ import { useUserStore } from './user'
 import { useAuthStore } from './auth'
 import { useLocalStorage } from '@vueuse/core'
 import { WSStoreRecord } from '../data/sbTypes'
+import models from '../../model-ts/all'
 
 const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 const port = window.location.port
@@ -33,7 +34,7 @@ export const useWSStore = defineStore('ws', {
           if (currentAttempt > maxNumberOfAttempts - 1) {
             clearInterval(interval)
             reject(new Error('Maximum number of attempts exceeded.'))
-          } else if (this.socket.readyState === this.socket.OPEN) {
+          } else if (this.socket?.readyState === this.socket?.OPEN) {
             clearInterval(interval)
             resolve(null)
           }
@@ -43,16 +44,16 @@ export const useWSStore = defineStore('ws', {
     },
     async sendData(jsonData: Record<string, any>) {
       // Trigger the wait for open connection if we've jumped the gun
-      if (this.socket.readyState !== this.socket.OPEN || this.connected === false) {
+      if (this.socket?.readyState !== this.socket?.OPEN || this.connected === false) {
         try {
           await this.waitForOpenConnection()
           console.log(this.socket)
-          this.socket.send(JSON.stringify(jsonData))
+          this.socket?.send(JSON.stringify(jsonData))
         } catch (err) {
           console.error(err)
         }
       } else {
-        this.socket.send(JSON.stringify(jsonData))
+        this.socket?.send(JSON.stringify(jsonData))
       }
     },
     socketOnOpenCallback(event: Event) {
@@ -61,7 +62,7 @@ export const useWSStore = defineStore('ws', {
 
       const reqId = new Date().getTime()
       this.$state.openRequestIds.push(reqId)
-      this.socket.send(
+      this.socket?.send(
         JSON.stringify({
           action: 'retrieve_self',
           request_id: reqId,
@@ -101,11 +102,11 @@ export const useWSStore = defineStore('ws', {
         this.handleUnexpected(jsonData)
       }
 
-    //   } else if (jsonData.class === 'sb.users.services.status') {
-    //     const AuthStore = useAuthStore()
+      //   } else if (jsonData.class === 'sb.users.services.status') {
+      //     const AuthStore = useAuthStore()
 
-    //     AuthStore.userServicesStatus[jsonData.service] = jsonData.data
-    //   }
+      //     AuthStore.userServicesStatus[jsonData.service] = jsonData.data
+      //   }
     },
     socketOnCloseCallback(event: CloseEvent) {
       console.warn('Websocket disconnected.')
@@ -116,7 +117,7 @@ export const useWSStore = defineStore('ws', {
     },
     connectSocket(token: string) {
       try {
-        this.socket.close()
+        this.socket?.close()
       } catch (err) {
         // test
       }

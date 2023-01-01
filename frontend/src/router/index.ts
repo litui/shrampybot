@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw, RouteRecord } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw, RouteRecord, RouterView } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useUserStore } from '../stores/user'
 import AuthLayout from '../layouts/AuthLayout.vue'
@@ -333,12 +333,12 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/overlay',
-    component: AppLayout,
+    component: RouteViewComponent,
     meta: {
       nav: {
         icon: 'vuestic-iconset-dashboard',
         displayName: 'menu.overlays',
-        disabled: true,
+        disabled: false,
         hidden: true,
       },
       perms: {
@@ -349,13 +349,31 @@ export const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
+        name: 'actigen',
+        path: '/overlay/actigen',
+        meta: {
+          nav: {
+            icon: 'vuestic-iconset-dashboard',
+            displayName: 'menu.actigen',
+            disabled: false,
+            hidden: true,
+          },
+          perms: {
+            requiresAuth: false,
+            requiresStaff: false,
+            requiresAdmin: true,
+          },
+        },
+        component: () => import('../pages/gsg/Actigen.vue'),
+      },
+      {
         name: 'wombragen',
         path: '/overlay/wombragen',
         meta: {
           nav: {
             icon: 'vuestic-iconset-dashboard',
             displayName: 'menu.wombragen',
-            disabled: true,
+            disabled: false,
             hidden: true,
           },
           perms: {
@@ -380,7 +398,7 @@ router.beforeEach(async (to: any, from: any, next) => {
   const AuthStore = useAuthStore()
   const UserStore = useUserStore()
 
-  if (AuthStore.accessToken !== '' && UserStore.self.isLoggedIn === true) {
+  if (AuthStore.accessToken !== '' && UserStore.self.is_authenticated === true) {
     next()
     return
   }
@@ -435,7 +453,8 @@ export const validateAndFetchRoute = async (route_path: any) => {
       } catch (refreshError: any) {
         UserStore.$state.self = {
           username: '',
-          isLoggedIn: false,
+          password: '',
+          is_authenticated: false,
         }
         AuthStore.$state.refreshToken = ''
         AuthStore.$state.accessToken = ''
@@ -447,7 +466,8 @@ export const validateAndFetchRoute = async (route_path: any) => {
     } else if (error.response.status == 500) {
       UserStore.$state.self = {
         username: '',
-        isLoggedIn: false,
+        password: '',
+        is_authenticated: false,
       }
       AuthStore.$state.refreshToken = ''
       AuthStore.$state.accessToken = ''

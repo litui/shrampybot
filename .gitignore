@@ -22,4 +22,4 @@ etc/*.json
 *_development
 *_staging
 model-ts/*.ts
-
+frontend/model-ts/

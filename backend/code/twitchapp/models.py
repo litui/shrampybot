@@ -5,6 +5,7 @@ from streamer.models import Streamer
 from uuid import uuid4
 from .apps import TwitchAppConfig
 from twitchAPI.twitch import TwitchUser as _TwitchUser, Game as _Game, Stream as _Stream
+from asgiref.sync import async_to_sync, sync_to_async
 
 
 class TwitchAccount(models.Model):
@@ -50,6 +51,14 @@ class TwitchAccount(models.Model):
         self.twitch_created_at = user.created_at
         self.profile_image_url = user.profile_image_url
         self.offline_image_url = user.offline_image_url
+
+    def update_twitch_account_by_login(self):
+        app: TwitchAppConfig = apps.get_app_config("twitchapp")
+        api = app.api
+
+        if self.login:
+            users = async_to_sync(api.get_users(logins=[self.login]))
+            print(users)
 
 
 class TwitchCategory(models.Model):

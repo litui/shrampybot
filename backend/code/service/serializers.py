@@ -1,13 +1,16 @@
+from django_typomatic import ts_interface
 from .models import Service, UserService
 from rest_framework import serializers
 
 
+@ts_interface()
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ["name"]
 
 
+@ts_interface()
 class UserServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserService
@@ -16,6 +19,7 @@ class UserServiceSerializer(serializers.ModelSerializer):
     service = ServiceSerializer(read_only=True, many=False)
 
 
+@ts_interface()
 class OAuthServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service

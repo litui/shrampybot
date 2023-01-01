@@ -1,3 +1,4 @@
+from django_typomatic import ts_interface
 from .models import Stream
 from django.db.models import OuterRef
 from twitchapp.models import TwitchAccount, TwitchStream
@@ -7,6 +8,7 @@ from twitchapp.serializers import TwitchStreamSerializer
 from rest_framework import serializers
 
 
+@ts_interface()
 class StreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stream
