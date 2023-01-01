@@ -57,7 +57,8 @@
     AuthStore.$state.refreshToken = ''
     UserStore.$state.self = {
       username: '',
-      isLoggedIn: false,
+      password: '',
+      is_authenticated: false,
     }
   })
 

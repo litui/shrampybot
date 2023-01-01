@@ -7,24 +7,26 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('service', '0001_initial'),
+        ("service", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userservice',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="userservice",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='userservice',
-            name='last_verified',
+            model_name="userservice",
+            name="last_verified",
             field=models.DateTimeField(null=True),
         ),
         migrations.AddField(
-            model_name='userservice',
-            name='modified_date',
+            model_name="userservice",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

@@ -1,29 +1,21 @@
 import { defineStore } from 'pinia'
-
-interface SelfStore {
-  username: string
-  isLoggedIn: boolean
-  is_authenticated?: boolean
-  is_superuser?: boolean
-  is_staff?: boolean
-  streamer?: any
-}
+import { UserSerializer, StreamerSerializer } from '../../model-ts/all'
 
 export const useUserStore = defineStore('user', {
   state: () => {
     return {
       self: {
         username: '',
-        isLoggedIn: false,
         is_authenticated: false,
         is_superuser: false,
         is_staff: false,
-        streamer: {},
-      } as SelfStore,
+        streamer: {} as StreamerSerializer,
+        password: '',
+      } as UserSerializer,
     }
   },
   actions: {
-    setSelf(selfData: SelfStore) {
+    setSelf(selfData: UserSerializer) {
       this.$state.self = selfData
     },
   },

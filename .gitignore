@@ -15,5 +15,11 @@ virtualenv
 log
 data/**
 etc/data/**
+etc/*.json
 *.crt
 *.pem
+*_production
+*_development
+*_staging
+model-ts/*.ts
+frontend/model-ts/

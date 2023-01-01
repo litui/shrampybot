@@ -29,5 +29,7 @@ class Stream(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['main_streamer', 'twitch_stream_id'], name='unique stream_assoc')
+            models.UniqueConstraint(
+                fields=["main_streamer", "twitch_stream_id"], name="unique stream_assoc"
+            )
         ]

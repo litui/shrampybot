@@ -1,9 +1,9 @@
 <template>
   <div v-if="connected" class="color-dropdown">
-    <va-icon name="material-icons-link" color="#00FF00" stick-to-edges size="large"></va-icon>
+    <va-icon name="fa-link" color="#00FF00" stick-to-edges size="large"></va-icon>
   </div>
   <div v-else>
-    <va-icon name="material-icons-link_off" color="#FF0000" stick-to-edges size="large"></va-icon>
+    <va-icon name="fa-unlink" color="#FF0000" stick-to-edges size="large"></va-icon>
   </div>
 </template>
 

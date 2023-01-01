@@ -11,7 +11,9 @@ class MastodonAccount(models.Model):
     description = models.TextField(null=True)
     primary_twitch_url = models.CharField(max_length=255, null=True)
     derived_twitch_id = models.CharField(max_length=255, null=True)
-    twitch_account = models.ForeignKey(TwitchAccount, on_delete=models.RESTRICT, null=True)
+    twitch_account = models.ForeignKey(
+        TwitchAccount, on_delete=models.RESTRICT, null=True
+    )
     streamer = models.OneToOneField(Streamer, on_delete=models.RESTRICT)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)

@@ -9,20 +9,26 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('twitchapp', '0001_initial'),
-        ('mastodonapp', '0001_initial'),
-        ('streamer', '0001_initial'),
+        ("twitchapp", "0001_initial"),
+        ("mastodonapp", "0001_initial"),
+        ("streamer", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mastodonaccount',
-            name='streamer',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.RESTRICT, to='streamer.streamer'),
+            model_name="mastodonaccount",
+            name="streamer",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.RESTRICT, to="streamer.streamer"
+            ),
         ),
         migrations.AddField(
-            model_name='mastodonaccount',
-            name='twitch_account',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.RESTRICT, to='twitchapp.twitchaccount'),
+            model_name="mastodonaccount",
+            name="twitch_account",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to="twitchapp.twitchaccount",
+            ),
         ),
     ]

@@ -7,19 +7,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DiscordAccount',
+            name="DiscordAccount",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('discord_id', models.CharField(max_length=255, unique=True)),
-                ('discord_name_in_guild', models.CharField(max_length=255, unique=True)),
-                ('parsed_twitch_url', models.CharField(max_length=255)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("discord_id", models.CharField(max_length=255, unique=True)),
+                (
+                    "discord_name_in_guild",
+                    models.CharField(max_length=255, unique=True),
+                ),
+                ("parsed_twitch_url", models.CharField(max_length=255)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

@@ -10,7 +10,7 @@
               {{ t(route.meta?.nav?.displayName as string) }}
             </va-sidebar-item-title>
 
-            <va-icon v-if="route.children" :name="accordionValue[idx] ? 'expand_less' : 'expand_more'" />
+            <va-icon v-if="route.children" :name="accordionValue[idx] ? 'fa-angle-up' : 'fa-angle-down'" />
           </va-sidebar-item-content>
         </va-sidebar-item>
       </template>

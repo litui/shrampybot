@@ -6,6 +6,8 @@ LABEL org.opencontainers.image.licenses=MIT
 # ENV PYTHONUNBUFFERED=1
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
+RUN apt update && apt install -y postgresql-client wait-for-it
+
 RUN useradd -ms /bin/bash shrampybot
 RUN addgroup shrampybot www-data
 # RUN addgroup shrampybot ssl-cert

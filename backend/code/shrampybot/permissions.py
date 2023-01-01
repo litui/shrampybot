@@ -1,7 +1,7 @@
 # Pattern copied unabashedly from DRF
 
-class BasePermission():
 
+class BasePermission:
     def has_permission(self):
         """
         Return `True` if permission is granted, `False` otherwise.
@@ -16,20 +16,15 @@ class BasePermission():
 
 
 class AllowAny(BasePermission):
-
     def has_permission(self):
         return True
 
 
 class IsAuthenticated(BasePermission):
-
     def has_permission(self):
-        return bool(self.scope.get('user') and self.scope['user'].is_authenticated)
+        return bool(self.scope.get("user") and self.scope["user"].is_authenticated)
 
 
 class IsAdminUser(BasePermission):
-
     def has_permission(self):
-        return bool(self.scope.get('user') and self.scope['user'].is_staff)
-
-
+        return bool(self.scope.get("user") and self.scope["user"].is_staff)
