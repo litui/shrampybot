@@ -1,19 +1,19 @@
 <template>
   <va-card class="timescale-card user-card" color="#000000" :style="`width: ${hoursWidth}`" square>
-    <va-card-content class="d-flex pa-2">
+    <va-card-content class="d-flex pa-0">
       <div>
         <va-avatar
           :src="imgSrc"
           class="timescale-avatar"
           square
-          size="66px"
+          style="height: 6.6vh; width: 3.8vw"
         />
       </div>
       <div class="pa-2 pl-3 d-flex flex-direction-column justify-begin">
-        <h5 class="display-5 ma-0" style="color: inherit">{{ username }}</h5>
+        <h5 class="display-5 ma-0" style="color: inherit; font-size: 1.2vw">Test{{ username }}</h5>
 
         <div class="d-flex">
-          <span class="mr-2 text--no-wrap">{{ location }}</span>
+          <span class="mr-2 text--no-wrap" style="font-size: 1vw">{{ location }}</span>
         </div>
       </div>
     </va-card-content>
@@ -44,12 +44,16 @@
       type: String,
       default: '',
     },
+    scaleFactor: {
+      type: Number,
+      default: 1,
+    },
   })
 
   const hoursWidth = ref<string>('')
 
   onMounted(() => {
-    hoursWidth.value = String(props.duration * props.width - 8) + 'px'
+    hoursWidth.value = String(props.duration * props.width - 8 * props.scaleFactor) + 'px'
   })
 </script>
 
@@ -57,12 +61,15 @@
   .timescale-card {
     overflow: flex;
     border: 1px solid #ffffff;
-    height: 86px;
-    margin: 4px;
+    height: 8.1vh;
+    margin-left: 0.208vw;
+    margin-right: 0.208vw;
+    padding: 0.5vh;
   }
 
   .timescale-avatar {
-    border: 1px solid #ffffff;
+    border: 0.1vh solid #ffffff;
     padding: 0px;
+    margin: 0.2vh;
   }
 </style>
